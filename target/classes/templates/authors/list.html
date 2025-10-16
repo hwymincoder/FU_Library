@@ -2,7 +2,7 @@
 <html
   lang="vi"
   xmlns:th="http://www.thymeleaf.org"
-  th:replace="~{layout :: layout(~{::title}, ~{::content})}"
+  th:replace="~{manager/layout :: layout(~{::title}, ~{::content})}"
 >
   <head>
     <title>Quản lý tác giả</title>
@@ -12,137 +12,105 @@
       <div
         class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom"
       >
-        <h1 class="h2">Quản lý tác giả</h1>
+        <h1 class="h2"><i class="fas fa-user-pen me-2"></i>Quản lý tác giả</h1>
         <div class="btn-toolbar mb-2 mb-md-0">
-          <a href="/authors/create" class="btn btn-primary">
-            <i class="fas fa-plus"></i> Thêm tác giả
+          <a href="/manager/authors/create" class="btn btn-primary">
+            <i class="fas fa-plus me-2"></i> Thêm tác giả
           </a>
         </div>
       </div>
 
       <!-- Search Form -->
-      <div class="row mb-3">
-        <div class="col-md-6">
-          <form method="get" action="/authors" class="d-flex">
-            <input
-              type="text"
-              name="search"
-              th:value="${search}"
-              class="form-control me-2"
-              placeholder="Tìm kiếm theo tên tác giả..."
-            />
-            <button type="submit" class="btn btn-outline-primary">
-              <i class="fas fa-search"></i>
-            </button>
+      <div class="card shadow-sm mb-4">
+        <div class="card-body">
+          <form method="get" action="/manager/authors">
+            <div class="input-group">
+              <input
+                type="text"
+                name="search"
+                th:value="${search}"
+                class="form-control"
+                placeholder="Tìm kiếm theo tên tác giả..."
+              />
+              <button type="submit" class="btn btn-primary">
+                <i class="fas fa-search me-2"></i>Tìm kiếm
+              </button>
+            </div>
           </form>
         </div>
       </div>
 
       <!-- Authors Table -->
-      <div class="table-responsive">
-        <table class="table table-striped table-hover">
-          <thead class="table-dark">
-            <tr>
-              <th>ID</th>
-              <th>Tên tác giả</th>
-              <th>Quốc tịch</th>
-              <th>Tiểu sử</th>
-              <th>Số sách</th>
-              <th>Thao tác</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr th:each="author : ${authors}">
-              <td th:text="${author.id}"></td>
-              <td th:text="${author.name}"></td>
-              <td th:text="${author.nationality ?: '-'}"></td>
-              <td>
-                <span
-                  th:if="${author.biography}"
-                  th:text="${#strings.abbreviate(author.biography, 50)}"
-                ></span>
-                <span th:unless="${author.biography}" class="text-muted"
-                  >-</span
-                >
-              </td>
-              <td>
-                <span
-                  class="badge bg-info"
-                  th:text="${author.books != null ? #lists.size(author.books) : 0}"
-                  >0</span
-                >
-              </td>
-              <td>
-                <div class="btn-group" role="group">
-                  <a
-                    th:href="@{/authors/{id}(id=${author.id})}"
-                    class="btn btn-sm btn-info"
-                  >
-                    <i class="fas fa-eye"></i>
-                  </a>
-                  <a
-                    th:href="@{/authors/{id}/edit(id=${author.id})}"
-                    class="btn btn-sm btn-warning"
-                  >
-                    <i class="fas fa-edit"></i>
-                  </a>
-                  <form
-                    th:action="@{/authors/{id}/delete(id=${author.id})}"
-                    method="post"
-                    class="d-inline"
-                    onsubmit="return confirm('Bạn có chắc chắn muốn xóa tác giả này?')"
-                  >
-                    <button type="submit" class="btn btn-sm btn-danger">
-                      <i class="fas fa-trash"></i>
-                    </button>
-                  </form>
-                </div>
-              </td>
-            </tr>
-            <tr th:if="${#lists.isEmpty(authors)}">
-              <td colspan="6" class="text-center text-muted">
-                Không có tác giả nào
-              </td>
-            </tr>
-          </tbody>
-        </table>
-      </div>
-
-      <!-- Quick Actions -->
-      <div class="row mt-4">
-        <div class="col-md-12">
-          <div class="card">
-            <div class="card-body">
-              <h5 class="card-title">Thao tác nhanh</h5>
-              <div class="row">
-                <div class="col-md-3">
-                  <a
-                    href="/authors/create"
-                    class="btn btn-outline-primary btn-sm"
-                  >
-                    <i class="fas fa-plus"></i> Thêm tác giả
-                  </a>
-                </div>
-                <div class="col-md-3">
-                  <a
-                    href="/books/create"
-                    class="btn btn-outline-success btn-sm"
-                  >
-                    <i class="fas fa-book"></i> Thêm sách
-                  </a>
-                </div>
-                <div class="col-md-3">
-                  <a href="/books" class="btn btn-outline-info btn-sm">
-                    <i class="fas fa-list"></i> Quản lý sách
-                  </a>
-                </div>
-                <div class="col-md-3">
-                  <a href="/dashboard" class="btn btn-outline-secondary btn-sm">
-                    <i class="fas fa-home"></i> Trang chủ
-                  </a>
-                </div>
-              </div>
-            </div>
+      <div class="card shadow-sm">
+        <div class="card-header bg-primary text-white">
+          <h6 class="mb-0"><i class="fas fa-list me-2"></i>Danh sách tác giả (<span th:text="${#lists.size(authors)}">0</span>)</h6>
+        </div>
+        <div class="card-body">
+          <div class="table-responsive">
+            <table class="table table-hover table-striped">
+              <thead class="table-light">
+                <tr>
+                  <th>ID</th>
+                  <th>Tên tác giả</th>
+                  <th>Quốc tịch</th>
+                  <th>Tiểu sử</th>
+                  <th class="text-center">Thao tác</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr th:each="author : ${authors}">
+                  <td><span class="badge bg-secondary" th:text="${author.id}"></span></td>
+                  <td><strong th:text="${author.name}"></strong></td>
+                  <td>
+                    <span th:if="${author.nationality}" th:text="${author.nationality}"></span>
+                    <span th:unless="${author.nationality}" class="text-muted"><em>Chưa rõ</em></span>
+                  </td>
+                  <td>
+                    <span th:if="${author.biography}" th:text="${#strings.abbreviate(author.biography, 100)}"></span>
+                    <span th:unless="${author.biography}" class="text-muted"><em>Chưa có tiểu sử</em></span>
+                  </td>
+                  <td class="text-center">
+                    <div class="btn-group" role="group">
+                      <a
+                        th:href="@{/manager/authors/{id}(id=${author.id})}"
+                        class="btn btn-sm btn-info"
+                        title="Xem chi tiết"
+                      >
+                        <i class="fas fa-eye"></i>
+                      </a>
+                      <a
+                        th:href="@{/manager/authors/{id}/edit(id=${author.id})}"
+                        class="btn btn-sm btn-warning"
+                        title="Chỉnh sửa"
+                      >
+                        <i class="fas fa-edit"></i>
+                      </a>
+                      <form
+                        th:action="@{/manager/authors/{id}/delete(id=${author.id})}"
+                        method="post"
+                        class="d-inline"
+                        onsubmit="return confirm('Bạn có chắc chắn muốn xóa tác giả này?')"
+                      >
+                        <button type="submit" class="btn btn-sm btn-danger" title="Xóa">
+                          <i class="fas fa-trash"></i>
+                        </button>
+                      </form>
+                    </div>
+                  </td>
+                </tr>
+                <tr th:if="${#lists.isEmpty(authors)}">
+                  <td colspan="5" class="text-center text-muted py-4">
+                    <i class="fas fa-inbox fa-3x mb-3 d-block"></i>
+                    <span th:if="${search != null && !search.isEmpty()}">
+                      Không tìm thấy tác giả nào với từ khóa "<strong th:text="${search}"></strong>"
+                    </span>
+                    <span th:unless="${search != null && !search.isEmpty()}">
+                      Chưa có tác giả nào. <a href="/manager/authors/create">Thêm tác giả mới</a>
+                    </span>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
           </div>
         </div>
       </div>

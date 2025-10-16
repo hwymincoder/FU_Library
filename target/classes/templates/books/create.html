@@ -2,7 +2,7 @@
 <html
   lang="vi"
   xmlns:th="http://www.thymeleaf.org"
-  th:replace="~{layout :: layout(~{::title}, ~{::content})}"
+  th:replace="~{manager/layout :: layout(~{::title}, ~{::content})}"
 >
   <head>
     <title>Thêm sách mới</title>
@@ -12,47 +12,53 @@
       <div
         class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom"
       >
-        <h1 class="h2">Thêm sách mới</h1>
+        <h1 class="h2"><i class="fas fa-plus-circle me-2"></i>Thêm sách mới</h1>
         <div class="btn-toolbar mb-2 mb-md-0">
-          <a href="/books" class="btn btn-secondary">
-            <i class="fas fa-arrow-left"></i> Quay lại
+          <a href="/manager/books" class="btn btn-secondary">
+            <i class="fas fa-arrow-left me-2"></i> Quay lại
           </a>
         </div>
       </div>
 
       <div class="row">
         <div class="col-md-8">
-          <div class="card">
-            <div class="card-header">
-              <h5 class="card-title mb-0">Thông tin sách</h5>
+          <div class="card shadow-sm">
+            <div class="card-header bg-primary text-white">
+              <h5 class="card-title mb-0"><i class="fas fa-info-circle me-2"></i>Thông tin sách</h5>
             </div>
             <div class="card-body">
               <form
-                th:action="@{/books/create}"
+                th:action="@{/manager/books/create}"
                 th:object="${book}"
                 method="post"
               >
                 <div class="row">
                   <div class="col-md-6">
                     <div class="mb-3">
-                      <label for="title" class="form-label">Tên sách *</label>
+                      <label for="title" class="form-label">
+                        <i class="fas fa-book me-1"></i>Tên sách <span class="text-danger">*</span>
+                      </label>
                       <input
                         type="text"
                         class="form-control"
                         id="title"
                         th:field="*{title}"
+                        placeholder="Nhập tên sách"
                         required
                       />
                     </div>
                   </div>
                   <div class="col-md-6">
                     <div class="mb-3">
-                      <label for="isbn" class="form-label">ISBN *</label>
+                      <label for="isbn" class="form-label">
+                        <i class="fas fa-barcode me-1"></i>ISBN <span class="text-danger">*</span>
+                      </label>
                       <input
                         type="text"
                         class="form-control"
                         id="isbn"
                         th:field="*{isbn}"
+                        placeholder="978-604-1-12345-6"
                         required
                       />
                     </div>
@@ -60,59 +66,76 @@
                 </div>
 
                 <div class="mb-3">
-                  <label for="description" class="form-label">Mô tả</label>
+                  <label for="description" class="form-label">
+                    <i class="fas fa-align-left me-1"></i>Mô tả
+                  </label>
                   <textarea
                     class="form-control"
                     id="description"
                     th:field="*{description}"
-                    rows="3"
+                    rows="4"
+                    placeholder="Nhập mô tả chi tiết về sách..."
                   ></textarea>
                 </div>
 
                 <div class="row">
                   <div class="col-md-6">
                     <div class="mb-3">
-                      <label for="totalCopies" class="form-label"
-                        >Số lượng *</label
-                      >
+                      <label for="totalCopies" class="form-label">
+                        <i class="fas fa-boxes me-1"></i>Số lượng <span class="text-danger">*</span>
+                      </label>
                       <input
                         type="number"
                         class="form-control"
                         id="totalCopies"
                         th:field="*{totalCopies}"
                         min="1"
+                        placeholder="Nhập số lượng"
                         required
                       />
+                      <small class="form-text text-muted">Số sách có sẵn sẽ bằng số lượng ban đầu</small>
                     </div>
                   </div>
                 </div>
 
-                <div class="mb-3">
-                  <label class="form-label">Tác giả</label>
-                  <div th:each="author : ${authors}" class="form-check">
-                    <input
-                      class="form-check-input"
-                      type="checkbox"
-                      th:id="'author_' + ${author.id}"
-                      th:value="${author.id}"
-                      name="authorIds"
-                    />
-                    <label
-                      class="form-check-label"
-                      th:for="'author_' + ${author.id}"
-                      th:text="${author.name}"
-                    ></label>
+                <div class="mb-4">
+                  <label class="form-label">
+                    <i class="fas fa-user-pen me-1"></i>Tác giả
+                  </label>
+                  <div class="border rounded p-3" style="max-height: 200px; overflow-y: auto;">
+                    <div th:each="author : ${authors}" class="form-check">
+                      <input
+                        class="form-check-input"
+                        type="checkbox"
+                        th:id="'author_' + ${author.id}"
+                        th:value="${author.id}"
+                        name="authorIds"
+                      />
+                      <label
+                        class="form-check-label"
+                        th:for="'author_' + ${author.id}"
+                        th:text="${author.name}"
+                      ></label>
+                    </div>
+                    <div th:if="${#lists.isEmpty(authors)}" class="text-muted text-center py-2">
+                      <i class="fas fa-info-circle me-1"></i>
+                      Chưa có tác giả nào
+                    </div>
                   </div>
                   <small class="form-text text-muted">
-                    Không có tác giả nào?
-                    <a href="/authors/create">Thêm tác giả mới</a>
+                    Không có tác giả nào? 
+                    <a href="/manager/authors/create" class="text-primary"><i class="fas fa-plus me-1"></i>Thêm tác giả mới</a>
                   </small>
                 </div>
 
+                <hr>
+
                 <div class="d-grid gap-2 d-md-flex justify-content-md-end">
-                  <a href="/books" class="btn btn-secondary me-md-2">Hủy</a>
+                  <a href="/manager/books" class="btn btn-secondary me-md-2">
+                    <i class="fas fa-times me-2"></i>Hủy
+                  </a>
                   <button type="submit" class="btn btn-primary">
-                    <i class="fas fa-save"></i> Lưu sách
+                    <i class="fas fa-save me-2"></i> Lưu sách
                   </button>
                 </div>
               </form>
@@ -121,43 +144,46 @@
         </div>
 
         <div class="col-md-4">
-          <div class="card">
-            <div class="card-header">
-              <h6 class="card-title mb-0">Hướng dẫn</h6>
+          <div class="card shadow-sm border-primary">
+            <div class="card-header bg-light">
+              <h6 class="card-title mb-0"><i class="fas fa-lightbulb me-2 text-warning"></i>Hướng dẫn</h6>
             </div>
             <div class="card-body">
-              <ul class="list-unstyled">
-                <li>
-                  <i class="fas fa-info-circle text-primary"></i> Tên sách và
-                  ISBN là bắt buộc
+              <ul class="list-unstyled mb-0">
+                <li class="mb-2">
+                  <i class="fas fa-check-circle text-success me-2"></i>
+                  Tên sách và ISBN là <strong>bắt buộc</strong>
                 </li>
-                <li>
-                  <i class="fas fa-info-circle text-primary"></i> Số lượng phải
-                  lớn hơn 0
+                <li class="mb-2">
+                  <i class="fas fa-check-circle text-success me-2"></i>
+                  Số lượng phải <strong>lớn hơn 0</strong>
                 </li>
-                <li>
-                  <i class="fas fa-info-circle text-primary"></i> Có thể chọn
-                  nhiều tác giả
+                <li class="mb-2">
+                  <i class="fas fa-check-circle text-success me-2"></i>
+                  Có thể chọn <strong>nhiều tác giả</strong>
                 </li>
-                <li>
-                  <i class="fas fa-info-circle text-primary"></i> Số sách có sẵn
-                  sẽ bằng số lượng ban đầu
+                <li class="mb-2">
+                  <i class="fas fa-check-circle text-success me-2"></i>
+                  Số sách có sẵn sẽ bằng số lượng ban đầu
                 </li>
               </ul>
             </div>
           </div>
 
-          <div class="card mt-3">
-            <div class="card-header">
-              <h6 class="card-title mb-0">Liên kết nhanh</h6>
+          <div class="card mt-3 shadow-sm">
+            <div class="card-header bg-light">
+              <h6 class="card-title mb-0"><i class="fas fa-link me-2"></i>Liên kết nhanh</h6>
             </div>
             <div class="card-body">
               <div class="d-grid gap-2">
-                <a href="/authors" class="btn btn-outline-info btn-sm">
-                  <i class="fas fa-user-pen"></i> Quản lý tác giả
+                <a href="/manager/authors" class="btn btn-outline-info btn-sm">
+                  <i class="fas fa-user-pen me-2"></i> Quản lý tác giả
                 </a>
-                <a href="/books" class="btn btn-outline-primary btn-sm">
-                  <i class="fas fa-list"></i> Danh sách sách
+                <a href="/manager/books" class="btn btn-outline-primary btn-sm">
+                  <i class="fas fa-list me-2"></i> Danh sách sách
+                </a>
+                <a href="/manager/dashboard" class="btn btn-outline-secondary btn-sm">
+                  <i class="fas fa-home me-2"></i> Về Dashboard
                 </a>
               </div>
             </div>

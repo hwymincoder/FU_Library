@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html
+  lang="vi"
+  xmlns:th="http://www.thymeleaf.org"
+  th:replace="~{user/layout :: layout(~{::title}, ~{::content})}"
+>
+  <head>
+    <title>Trang chủ - Thư viện</title>
+  </head>
+  <body>
+    <div th:fragment="content">
+      <!-- User Info Section -->
+      <div class="user-info-box mb-4">
+        <div class="row align-items-center">
+          <div class="col-md-8">
+            <h3 class="mb-2">
+              <i class="fas fa-hand-wave me-2"></i>Xin chào, 
+              <span th:text="${user.name}">User</span>!
+            </h3>
+            <p class="mb-1">
+              <i class="fas fa-wallet me-2"></i>Số dư: 
+              <strong th:text="${#numbers.formatDecimal(user.balance, 0, 'COMMA', 0, 'POINT')} + ' VNĐ'">0 VNĐ</strong>
+            </p>
+            <p class="mb-0" th:if="${user.membership != null}">
+              <i class="fas fa-crown me-2"></i>Gói thành viên: 
+              <strong th:text="${user.membership.type}">None</strong>
+              <span th:if="${user.membershipExpiresAt != null}">
+                (Hết hạn: <span th:text="${#temporals.format(user.membershipExpiresAt, 'dd/MM/yyyy')}"></span>)
+              </span>
+            </p>
+          </div>
+          <div class="col-md-4 text-end">
+            <a href="/user/cart" class="btn btn-light btn-lg">
+              <i class="fas fa-shopping-cart me-2"></i>
+              Giỏ sách (<span th:text="${cartCount}">0</span>)
+            </a>
+          </div>
+        </div>
+      </div>
+
+      <!-- Search Section -->
+      <div class="content-card">
+        <h4 class="mb-4"><i class="fas fa-search me-2"></i>Tìm kiếm sách</h4>
+        <form method="get" action="/user/home">
+          <div class="input-group input-group-lg">
+            <input
+              type="text"
+              class="form-control"
+              name="search"
+              placeholder="Nhập tên sách để tìm kiếm..."
+              th:value="${search}"
+            />
+            <button class="btn btn-primary-gradient" type="submit">
+              <i class="fas fa-search me-2"></i>Tìm kiếm
+            </button>
+          </div>
+        </form>
+      </div>
+
+      <!-- Books Section -->
+      <div class="content-card">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+          <h4 class="mb-0">
+            <i class="fas fa-book me-2"></i>
+            <span th:if="${search != null && !search.isEmpty()}">
+              Kết quả tìm kiếm cho "<span th:text="${search}"></span>"
+            </span>
+            <span th:if="${search == null || search.isEmpty()}">
+              Sách có sẵn
+            </span>
+          </h4>
+          <span class="badge bg-primary fs-6" th:text="${#lists.size(books)} + ' cuốn sách'">0 cuốn sách</span>
+        </div>
+
+        <div class="row">
+          <div class="col-md-4 mb-4" th:each="book : ${books}">
+            <div class="card h-100 shadow-sm" style="transition: all 0.3s ease;">
+              <div class="card-body">
+                <h5 class="card-title" th:text="${book.title}">Book Title</h5>
+                <p class="card-text text-muted mb-2">
+                  <small>
+                    <i class="fas fa-barcode me-1"></i>ISBN: <span th:text="${book.isbn}">000000</span>
+                  </small>
+                </p>
+                <p class="card-text" th:text="${book.description}">Description</p>
+                <hr>
+                <div class="d-flex justify-content-between align-items-center mb-2">
+                  <span class="badge bg-success" th:if="${book.availableCopies > 0}">
+                    <i class="fas fa-check-circle me-1"></i>Còn <span th:text="${book.availableCopies}">0</span> cuốn
+                  </span>
+                  <span class="badge bg-danger" th:if="${book.availableCopies <= 0}">
+                    <i class="fas fa-times-circle me-1"></i>Hết sách
+                  </span>
+                </div>
+                <form method="post" action="/user/cart/add" th:if="${book.availableCopies > 0}">
+                  <input type="hidden" name="bookId" th:value="${book.id}" />
+                  <button type="submit" class="btn btn-primary-gradient w-100">
+                    <i class="fas fa-cart-plus me-2"></i>Thêm vào giỏ
+                  </button>
+                </form>
+                <button class="btn btn-secondary w-100" disabled th:if="${book.availableCopies <= 0}">
+                  <i class="fas fa-ban me-2"></i>Không có sẵn
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <div class="col-12" th:if="${#lists.isEmpty(books)}">
+            <div class="alert alert-info text-center">
+              <i class="fas fa-info-circle me-2"></i>
+              <span th:if="${search != null && !search.isEmpty()}">
+                Không tìm thấy sách nào với từ khóa "<span th:text="${search}"></span>"
+              </span>
+              <span th:if="${search == null || search.isEmpty()}">
+                Hiện tại không có sách nào có sẵn
+              </span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </body>
+</html>
+

@@ -1,187 +1,48 @@
 <!DOCTYPE html>
-<html
-  lang="vi"
-  xmlns:th="http://www.thymeleaf.org"
-  th:replace="~{layout :: layout(~{::title}, ~{::content})}"
->
-  <head>
-    <title>Mượn sách</title>
-  </head>
-  <body>
-    <div th:fragment="content">
-      <div
-        class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom"
-      >
-        <h1 class="h2">Mượn sách</h1>
-        <div class="btn-toolbar mb-2 mb-md-0">
-          <a href="/borrows" class="btn btn-secondary">
-            <i class="fas fa-arrow-left"></i> Quay lại
-          </a>
-        </div>
-      </div>
-
-      <div class="row">
-        <div class="col-md-8">
-          <div class="card">
-            <div class="card-header">
-              <h5 class="card-title mb-0">Thông tin mượn sách</h5>
+<html lang="vi" xmlns:th="http://www.thymeleaf.org"
+  th:replace="~{manager/layout :: layout(~{::title}, ~{::content})}">
+<head><title>Mượn sách mới</title></head>
+<body>
+  <div th:fragment="content">
+    <div class="d-flex justify-content-between align-items-center pt-3 pb-2 mb-3 border-bottom">
+      <h1 class="h2"><i class="fas fa-hand-holding me-2"></i>Mượn sách mới</h1>
+      <a href="/manager/borrows" class="btn btn-secondary"><i class="fas fa-arrow-left me-2"></i>Quay lại</a>
+    </div>
+    <div class="card shadow-sm">
+      <div class="card-header bg-primary text-white"><h5 class="mb-0">Thông tin mượn sách</h5></div>
+      <div class="card-body">
+        <form th:action="@{/manager/borrows/create}" method="post">
+          <div class="row">
+            <div class="col-md-6 mb-3">
+              <label class="form-label">Người mượn <span class="text-danger">*</span></label>
+              <select name="userId" class="form-select" required>
+                <option value="">Chọn người dùng...</option>
+                <option th:each="user : ${users}" th:value="${user.id}" 
+                  th:text="${user.name} + ' (' + ${user.email} + ')'"></option>
+              </select>
             </div>
-            <div class="card-body">
-              <form th:action="@{/borrows/create}" method="post">
-                <div class="row">
-                  <div class="col-md-6">
-                    <div class="mb-3">
-                      <label for="userId" class="form-label"
-                        >Người mượn *</label
-                      >
-                      <select
-                        class="form-select"
-                        id="userId"
-                        name="userId"
-                        required
-                      >
-                        <option value="">-- Chọn người mượn --</option>
-                        <option
-                          th:each="user : ${users}"
-                          th:value="${user.id}"
-                          th:text="${user.name + ' (' + user.email + ')' + (user.membership != null && user.membershipExpiresAt != null && !user.membershipExpiresAt.isBefore(T(java.time.LocalDateTime).now()) ? '' : ' - Chưa có/hết hạn membership')}"
-                          th:disabled="${user.isBanned
-                            or user.membership == null
-                            or user.membershipExpiresAt == null
-                            or user.membershipExpiresAt.isBefore(T(java.time.LocalDateTime).now())}"
-                        ></option>
-                      </select>
-                      <small class="form-text text-muted">
-                        Chỉ chọn người dùng đang hoạt động và có membership hợp
-                        lệ
-                      </small>
-                    </div>
-                  </div>
-                  <div class="col-md-6">
-                    <div class="mb-3">
-                      <label for="bookId" class="form-label">Sách *</label>
-                      <select
-                        class="form-select"
-                        id="bookId"
-                        name="bookId"
-                        required
-                      >
-                        <option value="">-- Chọn sách --</option>
-                        <option
-                          th:each="book : ${availableBooks}"
-                          th:value="${book.id}"
-                          th:text="${book.title + ' (Có sẵn: ' + book.availableCopies + ')'}"
-                        ></option>
-                      </select>
-                      <small class="form-text text-muted">
-                        Chỉ hiển thị sách có sẵn để mượn
-                      </small>
-                    </div>
-                  </div>
-                </div>
-
-                <div class="mb-3">
-                  <label for="dueDate" class="form-label">Hạn trả *</label>
-                  <input
-                    type="datetime-local"
-                    class="form-control"
-                    id="dueDate"
-                    name="dueDateStr"
-                    required
-                  />
-                  <small class="form-text text-muted">
-                    Người mượn phải trả sách trước ngày này
-                  </small>
-                </div>
-
-                <div class="alert alert-info">
-                  <h6 class="alert-heading">Lưu ý:</h6>
-                  <ul class="mb-0">
-                    <li>Người dùng phải có membership hợp lệ để mượn sách</li>
-                    <li>
-                      Số sách mượn không được vượt quá giới hạn của gói
-                      membership
-                    </li>
-                    <li>Trả muộn sẽ bị phạt 30,000 VND/ngày/quyển</li>
-                  </ul>
-                </div>
-
-                <div class="d-grid gap-2 d-md-flex justify-content-md-end">
-                  <a href="/borrows" class="btn btn-secondary me-md-2">Hủy</a>
-                  <button type="submit" class="btn btn-primary">
-                    <i class="fas fa-hand-holding"></i> Mượn sách
-                  </button>
-                </div>
-              </form>
+            <div class="col-md-6 mb-3">
+              <label class="form-label">Sách <span class="text-danger">*</span></label>
+              <select name="bookId" class="form-select" required>
+                <option value="">Chọn sách...</option>
+                <option th:each="book : ${availableBooks}" th:value="${book.id}" 
+                  th:text="${book.title} + ' (Còn: ' + ${book.availableCopies} + ')'"></option>
+              </select>
             </div>
           </div>
-        </div>
-
-        <div class="col-md-4">
-          <div class="card">
-            <div class="card-header">
-              <h6 class="card-title mb-0">Thông tin membership</h6>
-            </div>
-            <div class="card-body">
-              <div class="list-group list-group-flush">
-                <div class="list-group-item">
-                  <div class="d-flex w-100 justify-content-between">
-                    <h6 class="mb-1">Gói thường</h6>
-                    <small class="text-muted">0 VND</small>
-                  </div>
-                  <p class="mb-1">5 sách/tháng</p>
-                </div>
-                <div class="list-group-item">
-                  <div class="d-flex w-100 justify-content-between">
-                    <h6 class="mb-1">Gói nâng cao</h6>
-                    <small class="text-muted">20,000 VND</small>
-                  </div>
-                  <p class="mb-1">10 sách/tháng</p>
-                </div>
-                <div class="list-group-item">
-                  <div class="d-flex w-100 justify-content-between">
-                    <h6 class="mb-1">Gói cao cấp</h6>
-                    <small class="text-muted">100,000 VND</small>
-                  </div>
-                  <p class="mb-1">Không giới hạn</p>
-                </div>
-              </div>
-            </div>
+          <div class="mb-3">
+            <label class="form-label">Ngày hẹn trả <span class="text-danger">*</span></label>
+            <input type="datetime-local" name="dueDateStr" class="form-control" required />
+            <small class="text-muted">Mặc định: 14 ngày kể từ hôm nay</small>
           </div>
-
-          <div class="card mt-3">
-            <div class="card-header">
-              <h6 class="card-title mb-0">Liên kết nhanh</h6>
-            </div>
-            <div class="card-body">
-              <div class="d-grid gap-2">
-                <a
-                  href="/books/available"
-                  class="btn btn-outline-success btn-sm"
-                >
-                  <i class="fas fa-check-circle"></i> Sách có sẵn
-                </a>
-                <a href="/users" class="btn btn-outline-info btn-sm">
-                  <i class="fas fa-users"></i> Quản lý người dùng
-                </a>
-                <a href="/borrows" class="btn btn-outline-primary btn-sm">
-                  <i class="fas fa-list"></i> Danh sách mượn/trả
-                </a>
-              </div>
-            </div>
+          <hr>
+          <div class="d-flex justify-content-end gap-2">
+            <a href="/manager/borrows" class="btn btn-secondary">Hủy</a>
+            <button type="submit" class="btn btn-primary"><i class="fas fa-save me-2"></i>Xác nhận mượn</button>
           </div>
-        </div>
+        </form>
       </div>
     </div>
-
-    <script>
-      // Set minimum date to tomorrow
-      document.addEventListener("DOMContentLoaded", function () {
-        const dueDateInput = document.getElementById("dueDate");
-        const tomorrow = new Date();
-        tomorrow.setDate(tomorrow.getDate() + 1);
-        dueDateInput.min = tomorrow.toISOString().slice(0, 16);
-      });
-    </script>
-  </body>
+  </div>
+</body>
 </html>

@@ -1,17 +1,23 @@
 package com.example.demo.controller;
 
-import com.example.demo.entity.Author;
-import com.example.demo.service.AuthorService;
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
-import java.util.List;
+import com.example.demo.entity.Author;
+import com.example.demo.service.AuthorService;
 
 @Controller
-@RequestMapping("/authors")
+@RequestMapping("/manager/authors")
 public class AuthorController {
 
     @Autowired
@@ -41,10 +47,10 @@ public class AuthorController {
         try {
             authorService.saveAuthor(author);
             redirectAttributes.addFlashAttribute("success", "Tác giả đã được thêm thành công!");
-            return "redirect:/authors";
+            return "redirect:/manager/authors";
         } catch (Exception e) {
             redirectAttributes.addFlashAttribute("error", "Lỗi khi thêm tác giả: " + e.getMessage());
-            return "redirect:/authors/create";
+            return "redirect:/manager/authors/create";
         }
     }
 
@@ -55,7 +61,7 @@ public class AuthorController {
                     model.addAttribute("author", author);
                     return "authors/detail";
                 })
-                .orElse("redirect:/authors");
+                .orElse("redirect:/manager/authors");
     }
 
     @GetMapping("/{id}/edit")
@@ -65,7 +71,7 @@ public class AuthorController {
                     model.addAttribute("author", author);
                     return "authors/edit";
                 })
-                .orElse("redirect:/authors");
+                .orElse("redirect:/manager/authors");
     }
 
     @PostMapping("/{id}/edit")
@@ -76,10 +82,10 @@ public class AuthorController {
             author.setId(id);
             authorService.saveAuthor(author);
             redirectAttributes.addFlashAttribute("success", "Tác giả đã được cập nhật thành công!");
-            return "redirect:/authors/" + id;
+            return "redirect:/manager/authors/" + id;
         } catch (Exception e) {
             redirectAttributes.addFlashAttribute("error", "Lỗi khi cập nhật tác giả: " + e.getMessage());
-            return "redirect:/authors/" + id + "/edit";
+            return "redirect:/manager/authors/" + id + "/edit";
         }
     }
 
@@ -91,6 +97,6 @@ public class AuthorController {
         } catch (Exception e) {
             redirectAttributes.addFlashAttribute("error", "Lỗi khi xóa tác giả: " + e.getMessage());
         }
-        return "redirect:/authors";
+        return "redirect:/manager/authors";
     }
 }

@@ -1,22 +1,24 @@
 package com.example.demo.controller;
 
-import com.example.demo.entity.BorrowRecord;
-import com.example.demo.entity.User;
-import com.example.demo.entity.Book;
-import com.example.demo.service.BorrowService;
-import com.example.demo.service.UserService;
-import com.example.demo.service.BookService;
+import java.time.LocalDateTime;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
-import java.time.LocalDateTime;
-import java.util.List;
+import com.example.demo.entity.BorrowRecord;
+import com.example.demo.service.BookService;
+import com.example.demo.service.BorrowService;
+import com.example.demo.service.UserService;
 
 @Controller
-@RequestMapping("/borrows")
+@RequestMapping("/manager/borrows")
 public class BorrowController {
 
     @Autowired
@@ -70,10 +72,10 @@ public class BorrowController {
                 redirectAttributes.addFlashAttribute("error",
                         "Không thể mượn sách! Kiểm tra điều kiện membership và số dư tài khoản.");
             }
-            return "redirect:/borrows";
+            return "redirect:/manager/borrows";
         } catch (Exception e) {
             redirectAttributes.addFlashAttribute("error", "Lỗi khi mượn sách: " + e.getMessage());
-            return "redirect:/borrows/create";
+            return "redirect:/manager/borrows/create";
         }
     }
 
@@ -86,10 +88,10 @@ public class BorrowController {
             } else {
                 redirectAttributes.addFlashAttribute("error", "Không thể trả sách!");
             }
-            return "redirect:/borrows";
+            return "redirect:/manager/borrows";
         } catch (Exception e) {
             redirectAttributes.addFlashAttribute("error", "Lỗi khi trả sách: " + e.getMessage());
-            return "redirect:/borrows";
+            return "redirect:/manager/borrows";
         }
     }
 
@@ -102,10 +104,10 @@ public class BorrowController {
             } else {
                 redirectAttributes.addFlashAttribute("error", "Không đủ số dư để thanh toán phạt!");
             }
-            return "redirect:/borrows";
+            return "redirect:/manager/borrows";
         } catch (Exception e) {
             redirectAttributes.addFlashAttribute("error", "Lỗi khi thanh toán phạt: " + e.getMessage());
-            return "redirect:/borrows";
+            return "redirect:/manager/borrows";
         }
     }
 

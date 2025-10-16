@@ -1,19 +1,25 @@
 package com.example.demo.controller;
 
-import com.example.demo.entity.Book;
-import com.example.demo.entity.Author;
-import com.example.demo.service.BookService;
-import com.example.demo.service.AuthorService;
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
-import java.util.List;
+import com.example.demo.entity.Author;
+import com.example.demo.entity.Book;
+import com.example.demo.service.AuthorService;
+import com.example.demo.service.BookService;
 
 @Controller
-@RequestMapping("/books")
+@RequestMapping("/manager/books")
 public class BookController {
 
     @Autowired
@@ -53,17 +59,17 @@ public class BookController {
             @RequestParam(required = false) List<Long> authorIds,
             RedirectAttributes redirectAttributes) {
         try {
-            Book savedBook = bookService.createBook(
+            bookService.createBook(
                     book.getTitle(),
                     book.getIsbn(),
                     book.getDescription(),
                     book.getTotalCopies(),
                     authorIds);
             redirectAttributes.addFlashAttribute("success", "Sách đã được thêm thành công!");
-            return "redirect:/books";
+            return "redirect:/manager/books";
         } catch (Exception e) {
             redirectAttributes.addFlashAttribute("error", "Lỗi khi thêm sách: " + e.getMessage());
-            return "redirect:/books/create";
+            return "redirect:/manager/books/create";
         }
     }
 
@@ -74,7 +80,7 @@ public class BookController {
                     model.addAttribute("book", book);
                     return "books/detail";
                 })
-                .orElse("redirect:/books");
+                .orElse("redirect:/manager/books");
     }
 
     @GetMapping("/{id}/edit")
@@ -85,7 +91,7 @@ public class BookController {
                     model.addAttribute("authors", authorService.getAllAuthors());
                     return "books/edit";
                 })
-                .orElse("redirect:/books");
+                .orElse("redirect:/manager/books");
     }
 
     @PostMapping("/{id}/edit")
@@ -103,10 +109,10 @@ public class BookController {
             }
             bookService.saveBook(book);
             redirectAttributes.addFlashAttribute("success", "Sách đã được cập nhật thành công!");
-            return "redirect:/books/" + id;
+            return "redirect:/manager/books/" + id;
         } catch (Exception e) {
             redirectAttributes.addFlashAttribute("error", "Lỗi khi cập nhật sách: " + e.getMessage());
-            return "redirect:/books/" + id + "/edit";
+            return "redirect:/manager/books/" + id + "/edit";
         }
     }
 
@@ -118,6 +124,6 @@ public class BookController {
         } catch (Exception e) {
             redirectAttributes.addFlashAttribute("error", "Lỗi khi xóa sách: " + e.getMessage());
         }
-        return "redirect:/books";
+        return "redirect:/manager/books";
     }
 }

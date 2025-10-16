@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html
+  lang="vi"
+  xmlns:th="http://www.thymeleaf.org"
+  th:replace="~{user/layout :: layout(~{::title}, ~{::content})}"
+>
+  <head>
+    <title>Giỏ sách - Xác nhận mượn</title>
+  </head>
+  <body>
+    <div th:fragment="content">
+      <!-- Page Header -->
+      <div class="content-card">
+        <div class="d-flex justify-content-between align-items-center">
+          <h3 class="mb-0"><i class="fas fa-shopping-cart me-2"></i>Giỏ sách của bạn</h3>
+          <a href="/user/home" class="btn btn-outline-primary">
+            <i class="fas fa-arrow-left me-2"></i>Tiếp tục chọn sách
+          </a>
+        </div>
+      </div>
+
+      <!-- Empty Cart Message -->
+      <div th:if="${#lists.isEmpty(cartItems)}" class="content-card text-center">
+        <div class="py-5">
+          <i class="fas fa-shopping-cart fa-5x text-muted mb-4"></i>
+          <h4 class="text-muted mb-3">Giỏ sách của bạn đang trống</h4>
+          <p class="text-muted mb-4">Hãy thêm một vài cuốn sách để mượn nhé!</p>
+          <a href="/user/home" class="btn btn-primary-gradient btn-lg">
+            <i class="fas fa-book me-2"></i>Khám phá sách
+          </a>
+        </div>
+      </div>
+
+      <!-- Cart Items -->
+      <div th:if="${!#lists.isEmpty(cartItems)}">
+        <!-- User Info Summary -->
+        <div class="content-card">
+          <h5 class="mb-3"><i class="fas fa-info-circle me-2"></i>Thông tin tài khoản</h5>
+          <div class="row">
+            <div class="col-md-4 mb-2">
+              <div class="d-flex align-items-center p-3 bg-light rounded">
+                <i class="fas fa-wallet fa-2x text-success me-3"></i>
+                <div>
+                  <small class="text-muted">Số dư</small>
+                  <h6 class="mb-0" th:text="${#numbers.formatDecimal(user.balance, 0, 'COMMA', 0, 'POINT')} + ' VNĐ'">0 VNĐ</h6>
+                </div>
+              </div>
+            </div>
+            <div class="col-md-4 mb-2" th:if="${user.membership != null}">
+              <div class="d-flex align-items-center p-3 bg-light rounded">
+                <i class="fas fa-crown fa-2x text-warning me-3"></i>
+                <div>
+                  <small class="text-muted">Gói thành viên</small>
+                  <h6 class="mb-0" th:text="${user.membership.type}">Premium</h6>
+                </div>
+              </div>
+            </div>
+            <div class="col-md-4 mb-2" th:if="${user.membership != null}">
+              <div class="d-flex align-items-center p-3 bg-light rounded">
+                <i class="fas fa-book fa-2x text-primary me-3"></i>
+                <div>
+                  <small class="text-muted">Số sách tối đa</small>
+                  <h6 class="mb-0" th:text="${user.membership.maxBooksPerMonth} + ' cuốn'">0 cuốn</h6>
+                </div>
+              </div>
+            </div>
+          </div>
+          
+          <div th:if="${user.membership == null}" class="alert alert-warning mt-3">
+            <i class="fas fa-exclamation-triangle me-2"></i>
+            Bạn cần có gói thành viên để mượn sách. Vui lòng liên hệ quản trị viên.
+          </div>
+        </div>
+
+        <!-- Cart Items List -->
+        <div class="content-card">
+          <h5 class="mb-4">
+            <i class="fas fa-list me-2"></i>
+            Danh sách sách trong giỏ (<span th:text="${#lists.size(cartItems)}">0</span> cuốn)
+          </h5>
+          
+          <div class="row">
+            <div class="col-md-6 mb-3" th:each="item : ${cartItems}">
+              <div class="card h-100 border-0 shadow-sm">
+                <div class="card-body">
+                  <div class="d-flex justify-content-between align-items-start mb-2">
+                    <h5 class="card-title mb-0" th:text="${item.book.title}">Book Title</h5>
+                    <form method="post" action="/user/cart/remove" class="d-inline">
+                      <input type="hidden" name="cartId" th:value="${item.id}" />
+                      <button type="submit" class="btn btn-sm btn-outline-danger">
+                        <i class="fas fa-times"></i>
+                      </button>
+                    </form>
+                  </div>
+                  <p class="card-text text-muted mb-2">
+                    <small>
+                      <i class="fas fa-barcode me-1"></i>ISBN: <span th:text="${item.book.isbn}">000000</span>
+                    </small>
+                  </p>
+                  <p class="card-text" th:text="${item.book.description}">Description</p>
+                  <hr>
+                  <small class="text-muted">
+                    <i class="fas fa-clock me-1"></i>
+                    Thêm lúc: <span th:text="${#temporals.format(item.addedAt, 'dd/MM/yyyy HH:mm')}"></span>
+                  </small>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Confirmation Section -->
+        <div class="content-card">
+          <h5 class="mb-4"><i class="fas fa-check-circle me-2"></i>Xác nhận mượn sách</h5>
+          
+          <div class="alert alert-info">
+            <h6><i class="fas fa-info-circle me-2"></i>Thông tin quan trọng:</h6>
+            <ul class="mb-0">
+              <li>Thời hạn mượn: <strong>14 ngày</strong></li>
+              <li>Phí phạt trễ hạn: <strong>30,000 VNĐ/ngày/cuốn</strong></li>
+              <li>Số sách đang chọn: <strong><span th:text="${#lists.size(cartItems)}">0</span> cuốn</strong></li>
+            </ul>
+          </div>
+
+          <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+            <a href="/user/home" class="btn btn-outline-secondary btn-lg">
+              <i class="fas fa-arrow-left me-2"></i>Quay lại
+            </a>
+            <form method="post" action="/user/cart/confirm" class="d-inline">
+              <button type="submit" class="btn btn-primary-gradient btn-lg" th:disabled="${user.membership == null}">
+                <i class="fas fa-check me-2"></i>Xác nhận mượn sách
+              </button>
+            </form>
+          </div>
+
+          <div th:if="${user.membership == null}" class="mt-3">
+            <small class="text-danger">
+              <i class="fas fa-exclamation-triangle me-1"></i>
+              Bạn cần có gói thành viên để mượn sách
+            </small>
+          </div>
+        </div>
+      </div>
+    </div>
+  </body>
+</html>
+

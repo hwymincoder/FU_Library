@@ -1,19 +1,22 @@
 package com.example.demo.controller;
 
-import com.example.demo.entity.User;
-import com.example.demo.entity.Membership;
-import com.example.demo.service.UserService;
-import com.example.demo.service.MembershipService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
-import java.util.List;
+import com.example.demo.entity.User;
+import com.example.demo.service.MembershipService;
+import com.example.demo.service.UserService;
 
 @Controller
-@RequestMapping("/users")
+@RequestMapping("/manager/users")
 public class UserController {
 
     @Autowired
@@ -39,15 +42,15 @@ public class UserController {
         try {
             if (userService.isEmailExists(user.getEmail())) {
                 redirectAttributes.addFlashAttribute("error", "Email đã tồn tại!");
-                return "redirect:/users/create";
+                return "redirect:/manager/users/create";
             }
 
             userService.saveUser(user);
             redirectAttributes.addFlashAttribute("success", "Người dùng đã được thêm thành công!");
-            return "redirect:/users";
+            return "redirect:/manager/users";
         } catch (Exception e) {
             redirectAttributes.addFlashAttribute("error", "Lỗi khi thêm người dùng: " + e.getMessage());
-            return "redirect:/users/create";
+            return "redirect:/manager/users/create";
         }
     }
 
@@ -59,7 +62,7 @@ public class UserController {
                     model.addAttribute("memberships", membershipService.getAllMemberships());
                     return "users/detail";
                 })
-                .orElse("redirect:/users");
+                .orElse("redirect:/manager/users");
     }
 
     @GetMapping("/{id}/edit")
@@ -69,7 +72,7 @@ public class UserController {
                     model.addAttribute("user", user);
                     return "users/edit";
                 })
-                .orElse("redirect:/users");
+                .orElse("redirect:/manager/users");
     }
 
     @PostMapping("/{id}/edit")
@@ -80,10 +83,10 @@ public class UserController {
             user.setId(id);
             userService.saveUser(user);
             redirectAttributes.addFlashAttribute("success", "Người dùng đã được cập nhật thành công!");
-            return "redirect:/users/" + id;
+            return "redirect:/manager/users/" + id;
         } catch (Exception e) {
             redirectAttributes.addFlashAttribute("error", "Lỗi khi cập nhật người dùng: " + e.getMessage());
-            return "redirect:/users/" + id + "/edit";
+            return "redirect:/manager/users/" + id + "/edit";
         }
     }
 
@@ -95,7 +98,7 @@ public class UserController {
         } catch (Exception e) {
             redirectAttributes.addFlashAttribute("error", "Lỗi khi xóa người dùng: " + e.getMessage());
         }
-        return "redirect:/users";
+        return "redirect:/manager/users";
     }
 
     @GetMapping("/{id}/deposit")
@@ -105,7 +108,7 @@ public class UserController {
                     model.addAttribute("user", user);
                     return "users/deposit";
                 })
-                .orElse("redirect:/users");
+                .orElse("redirect:/manager/users");
     }
 
     @PostMapping("/{id}/deposit")
@@ -115,7 +118,7 @@ public class UserController {
         try {
             if (amount <= 0) {
                 redirectAttributes.addFlashAttribute("error", "Số tiền phải lớn hơn 0!");
-                return "redirect:/users/" + id + "/deposit";
+                return "redirect:/manager/users/" + id + "/deposit";
             }
 
             boolean success = userService.depositMoney(id, amount);
@@ -124,10 +127,10 @@ public class UserController {
             } else {
                 redirectAttributes.addFlashAttribute("error", "Không tìm thấy người dùng!");
             }
-            return "redirect:/users/" + id + "/deposit";
+            return "redirect:/manager/users/" + id + "/deposit";
         } catch (Exception e) {
             redirectAttributes.addFlashAttribute("error", "Lỗi khi nạp tiền: " + e.getMessage());
-            return "redirect:/users/" + id + "/deposit";
+            return "redirect:/manager/users/" + id + "/deposit";
         }
     }
 
@@ -142,10 +145,10 @@ public class UserController {
             } else {
                 redirectAttributes.addFlashAttribute("error", "Không đủ số dư hoặc gói membership không hợp lệ!");
             }
-            return "redirect:/users/" + id;
+            return "redirect:/manager/users/" + id;
         } catch (Exception e) {
             redirectAttributes.addFlashAttribute("error", "Lỗi khi mua membership: " + e.getMessage());
-            return "redirect:/users/" + id;
+            return "redirect:/manager/users/" + id;
         }
     }
 }

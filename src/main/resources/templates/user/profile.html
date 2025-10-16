@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html
+  lang="vi"
+  xmlns:th="http://www.thymeleaf.org"
+  th:replace="~{user/layout :: layout(~{::title}, ~{::content})}"
+>
+  <head>
+    <title>Hồ sơ cá nhân</title>
+  </head>
+  <body>
+    <div th:fragment="content">
+      <!-- User Info Card -->
+      <div class="content-card">
+        <h3 class="mb-4"><i class="fas fa-user-circle me-2"></i>Thông tin cá nhân</h3>
+        
+        <div class="row">
+          <div class="col-md-6 mb-3">
+            <div class="card border-0 bg-light">
+              <div class="card-body">
+                <h6 class="text-muted mb-2"><i class="fas fa-user me-2"></i>Họ và tên</h6>
+                <h5 th:text="${user.name}">Nguyễn Văn A</h5>
+              </div>
+            </div>
+          </div>
+
+          <div class="col-md-6 mb-3">
+            <div class="card border-0 bg-light">
+              <div class="card-body">
+                <h6 class="text-muted mb-2"><i class="fas fa-envelope me-2"></i>Email</h6>
+                <h5 th:text="${user.email}">email@example.com</h5>
+              </div>
+            </div>
+          </div>
+
+          <div class="col-md-6 mb-3">
+            <div class="card border-0 bg-light">
+              <div class="card-body">
+                <h6 class="text-muted mb-2"><i class="fas fa-phone me-2"></i>Số điện thoại</h6>
+                <h5 th:text="${user.phone}">0123456789</h5>
+              </div>
+            </div>
+          </div>
+
+          <div class="col-md-6 mb-3">
+            <div class="card border-0 bg-light">
+              <div class="card-body">
+                <h6 class="text-muted mb-2"><i class="fas fa-wallet me-2"></i>Số dư tài khoản</h6>
+                <h5 class="text-success" th:text="${#numbers.formatDecimal(user.balance, 0, 'COMMA', 0, 'POINT')} + ' VNĐ'">0 VNĐ</h5>
+              </div>
+            </div>
+          </div>
+
+          <div class="col-md-12 mb-3" th:if="${user.membership != null}">
+            <div class="card border-0" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);">
+              <div class="card-body text-white">
+                <h6 class="mb-2"><i class="fas fa-crown me-2"></i>Gói thành viên</h6>
+                <h4 th:text="${user.membership.type}">Premium</h4>
+                <p class="mb-1">
+                  Giá: <strong th:text="${#numbers.formatDecimal(user.membership.price, 0, 'COMMA', 0, 'POINT')} + ' VNĐ'">0 VNĐ</strong>
+                </p>
+                <p class="mb-1">
+                  Số sách tối đa: <strong th:text="${user.membership.maxBooksPerMonth}">0</strong> cuốn/tháng
+                </p>
+                <p class="mb-0" th:if="${user.membershipExpiresAt != null}">
+                  Hết hạn: <strong th:text="${#temporals.format(user.membershipExpiresAt, 'dd/MM/yyyy HH:mm')}"></strong>
+                </p>
+              </div>
+            </div>
+          </div>
+
+          <div class="col-md-12 mb-3" th:if="${user.membership == null}">
+            <div class="alert alert-warning">
+              <i class="fas fa-exclamation-triangle me-2"></i>
+              Bạn chưa có gói thành viên. Vui lòng liên hệ quản trị viên để mua gói thành viên.
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Currently Borrowed Books -->
+      <div class="content-card">
+        <h3 class="mb-4"><i class="fas fa-book-reader me-2"></i>Sách đang mượn</h3>
+        
+        <div th:if="${#lists.isEmpty(activeBorrows)}" class="alert alert-info">
+          <i class="fas fa-info-circle me-2"></i>Bạn chưa mượn sách nào.
+        </div>
+
+        <div class="table-responsive" th:if="${!#lists.isEmpty(activeBorrows)}">
+          <table class="table table-hover">
+            <thead class="table-light">
+              <tr>
+                <th><i class="fas fa-book me-2"></i>Tên sách</th>
+                <th><i class="fas fa-calendar-alt me-2"></i>Ngày mượn</th>
+                <th><i class="fas fa-calendar-check me-2"></i>Ngày hẹn trả</th>
+                <th><i class="fas fa-info-circle me-2"></i>Trạng thái</th>
+                <th><i class="fas fa-dollar-sign me-2"></i>Tiền phạt</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr th:each="borrow : ${activeBorrows}">
+                <td th:text="${borrow.book.title}">Book Title</td>
+                <td th:text="${#temporals.format(borrow.borrowDate, 'dd/MM/yyyy')}">01/01/2024</td>
+                <td th:text="${#temporals.format(borrow.dueDate, 'dd/MM/yyyy')}">15/01/2024</td>
+                <td>
+                  <span th:if="${borrow.status.name() == 'BORROWED'}" class="badge bg-warning">
+                    <i class="fas fa-clock me-1"></i>Đang mượn
+                  </span>
+                  <span th:if="${borrow.status.name() == 'OVERDUE'}" class="badge bg-danger">
+                    <i class="fas fa-exclamation-triangle me-1"></i>Quá hạn
+                  </span>
+                </td>
+                <td>
+                  <span th:if="${borrow.fineAmount > 0}" class="text-danger fw-bold">
+                    <span th:text="${#numbers.formatDecimal(borrow.fineAmount, 0, 'COMMA', 0, 'POINT')} + ' VNĐ'">0 VNĐ</span>
+                  </span>
+                  <span th:if="${borrow.fineAmount <= 0}" class="text-success">
+                    <i class="fas fa-check-circle me-1"></i>Không
+                  </span>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- Borrow History -->
+      <div class="content-card">
+        <h3 class="mb-4"><i class="fas fa-history me-2"></i>Lịch sử mượn sách</h3>
+        
+        <div th:if="${#lists.isEmpty(borrowRecords)}" class="alert alert-info">
+          <i class="fas fa-info-circle me-2"></i>Chưa có lịch sử mượn sách.
+        </div>
+
+        <div class="table-responsive" th:if="${!#lists.isEmpty(borrowRecords)}">
+          <table class="table table-hover">
+            <thead class="table-light">
+              <tr>
+                <th><i class="fas fa-book me-2"></i>Tên sách</th>
+                <th><i class="fas fa-calendar-alt me-2"></i>Ngày mượn</th>
+                <th><i class="fas fa-calendar-check me-2"></i>Ngày hẹn trả</th>
+                <th><i class="fas fa-calendar-times me-2"></i>Ngày trả thực tế</th>
+                <th><i class="fas fa-info-circle me-2"></i>Trạng thái</th>
+                <th><i class="fas fa-dollar-sign me-2"></i>Tiền phạt</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr th:each="borrow : ${borrowRecords}">
+                <td th:text="${borrow.book.title}">Book Title</td>
+                <td th:text="${#temporals.format(borrow.borrowDate, 'dd/MM/yyyy')}">01/01/2024</td>
+                <td th:text="${#temporals.format(borrow.dueDate, 'dd/MM/yyyy')}">15/01/2024</td>
+                <td>
+                  <span th:if="${borrow.returnDate != null}" th:text="${#temporals.format(borrow.returnDate, 'dd/MM/yyyy')}">20/01/2024</span>
+                  <span th:if="${borrow.returnDate == null}">-</span>
+                </td>
+                <td>
+                  <span th:if="${borrow.status.name() == 'BORROWED'}" class="badge bg-warning">Đang mượn</span>
+                  <span th:if="${borrow.status.name() == 'RETURNED'}" class="badge bg-success">Đã trả</span>
+                  <span th:if="${borrow.status.name() == 'OVERDUE'}" class="badge bg-danger">Quá hạn</span>
+                </td>
+                <td>
+                  <span th:if="${borrow.fineAmount > 0}" class="text-danger fw-bold">
+                    <span th:text="${#numbers.formatDecimal(borrow.fineAmount, 0, 'COMMA', 0, 'POINT')} + ' VNĐ'">0 VNĐ</span>
+                  </span>
+                  <span th:if="${borrow.fineAmount <= 0}">-</span>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </body>
+</html>
+

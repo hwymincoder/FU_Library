@@ -1,92 +1,60 @@
 <!DOCTYPE html>
-<html
-  lang="vi"
-  xmlns:th="http://www.thymeleaf.org"
-  th:replace="~{layout :: layout(~{::title}, ~{::content})}"
->
-  <head>
-    <title>Đang mượn</title>
-  </head>
-  <body>
-    <div th:fragment="content">
-      <div
-        class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom"
-      >
-        <h1 class="h2">Đang mượn</h1>
-        <div class="btn-toolbar mb-2 mb-md-0">
-          <a href="/borrows" class="btn btn-secondary">
-            <i class="fas fa-arrow-left"></i> Quay lại
-          </a>
-        </div>
-      </div>
-
-      <!-- Active Borrows Table -->
-      <div class="table-responsive mt-3">
-        <table class="table table-striped table-hover">
-          <thead class="table-dark">
-            <tr>
-              <th>ID</th>
-              <th>Người mượn</th>
-              <th>Sách</th>
-              <th>Ngày mượn</th>
-              <th>Hạn trả</th>
-              <th>Cảnh báo</th>
-              <th>Thao tác</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr th:each="borrow : ${borrows}">
-              <td th:text="${borrow.id}"></td>
-              <td th:text="${borrow.user.name}"></td>
-              <td th:text="${borrow.book.title}"></td>
-              <td
-                th:text="${#temporals.format(borrow.borrowDate, 'dd/MM/yyyy')}"
-              ></td>
-              <td
-                th:text="${#temporals.format(borrow.dueDate, 'dd/MM/yyyy HH:mm')}"
-              ></td>
-              <td>
-                <span
-                  th:with="hoursLeft=${T(java.time.Duration).between(T(java.time.LocalDateTime).now(), borrow.dueDate).toHours()}"
-                  th:if="${hoursLeft <= 24 && hoursLeft > 0}"
-                  class="badge bg-warning text-dark"
-                  th:text="${'Còn ' + hoursLeft + ' giờ'}"
-                ></span>
-                <span
-                  th:if="${borrow.dueDate.isBefore(T(java.time.LocalDateTime).now())}"
-                  class="badge bg-danger"
-                  >Quá hạn</span
-                >
-                <span
-                  th:if="${T(java.time.Duration).between(T(java.time.LocalDateTime).now(), borrow.dueDate).toHours() > 24}"
-                  class="text-muted"
-                  >-</span
-                >
-              </td>
-              <td>
-                <form
-                  th:action="@{/borrows/{id}/return(id=${borrow.id})}"
-                  method="post"
-                  class="d-inline"
-                >
-                  <button
-                    type="submit"
-                    class="btn btn-sm btn-success"
-                    onclick="return confirm('Xác nhận trả sách?')"
-                  >
-                    <i class="fas fa-undo"></i>
-                  </button>
-                </form>
-              </td>
-            </tr>
-            <tr th:if="${#lists.isEmpty(borrows)}">
-              <td colspan="7" class="text-center text-muted">
-                Không có bản ghi đang mượn
-              </td>
-            </tr>
-          </tbody>
-        </table>
+<html lang="vi" xmlns:th="http://www.thymeleaf.org"
+  th:replace="~{manager/layout :: layout(~{::title}, ~{::content})}">
+<head><title>Sách đang mượn</title></head>
+<body>
+  <div th:fragment="content">
+    <div class="d-flex justify-content-between align-items-center pt-3 pb-2 mb-3 border-bottom">
+      <h1 class="h2"><i class="fas fa-book-reader me-2"></i>Sách đang mượn</h1>
+      <div>
+        <a href="/manager/borrows" class="btn btn-secondary"><i class="fas fa-list me-2"></i>Tất cả giao dịch</a>
       </div>
     </div>
-  </body>
+    <div class="card shadow-sm">
+      <div class="card-header bg-warning text-dark">
+        <h6 class="mb-0">Đang mượn (<span th:text="${#lists.size(borrows)}">0</span> cuốn)</h6>
+      </div>
+      <div class="card-body">
+        <div class="table-responsive">
+          <table class="table table-hover">
+            <thead class="table-light">
+              <tr>
+                <th>Người mượn</th>
+                <th>Sách</th>
+                <th>Ngày mượn</th>
+                <th>Hạn trả</th>
+                <th>Phạt</th>
+                <th class="text-center">Thao tác</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr th:each="borrow : ${borrows}">
+                <td><a th:href="@{/manager/users/{id}(id=${borrow.user.id})}" th:text="${borrow.user.name}"></a></td>
+                <td><a th:href="@{/manager/books/{id}(id=${borrow.book.id})}" th:text="${borrow.book.title}"></a></td>
+                <td th:text="${#temporals.format(borrow.borrowDate, 'dd/MM/yyyy')}"></td>
+                <td th:text="${#temporals.format(borrow.dueDate, 'dd/MM/yyyy')}"></td>
+                <td>
+                  <span th:if="${borrow.fineAmount > 0}" class="text-danger fw-bold" 
+                    th:text="${#numbers.formatDecimal(borrow.fineAmount, 0, 'COMMA', 0, 'POINT')} + ' đ'"></span>
+                  <span th:unless="${borrow.fineAmount > 0}">-</span>
+                </td>
+                <td class="text-center">
+                  <form th:action="@{/manager/borrows/{id}/return(id=${borrow.id})}" method="post">
+                    <button type="submit" class="btn btn-sm btn-success"><i class="fas fa-undo me-1"></i>Trả sách</button>
+                  </form>
+                </td>
+              </tr>
+              <tr th:if="${#lists.isEmpty(borrows)}">
+                <td colspan="6" class="text-center text-muted py-4">
+                  <i class="fas fa-check-circle fa-3x mb-3 d-block text-success"></i>
+                  Tất cả sách đã được trả!
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+</body>
 </html>
