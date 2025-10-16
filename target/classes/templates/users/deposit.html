@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+<html
+  lang="vi"
+  xmlns:th="http://www.thymeleaf.org"
+  th:replace="~{layout :: layout(~{::title}, ~{::content})}"
+>
+  <head>
+    <title>Nạp tiền</title>
+  </head>
+  <body>
+    <div th:fragment="content">
+      <div
+        class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom"
+      >
+        <h1 class="h2">Nạp tiền</h1>
+        <div class="btn-toolbar mb-2 mb-md-0">
+          <a th:href="@{/users/{id}(id=${user.id})}" class="btn btn-secondary">
+            <i class="fas fa-arrow-left"></i> Quay lại
+          </a>
+        </div>
+      </div>
+
+      <div class="row">
+        <div class="col-md-8">
+          <div class="card">
+            <div class="card-header">
+              <h5 class="card-title mb-0">Thông tin nạp tiền</h5>
+            </div>
+            <div class="card-body">
+              <!-- User Info -->
+              <div class="row mb-4">
+                <div class="col-md-6">
+                  <h6>Thông tin người dùng:</h6>
+                  <p>
+                    <strong>Tên:</strong> <span th:text="${user.name}"></span>
+                  </p>
+                  <p>
+                    <strong>Email:</strong>
+                    <span th:text="${user.email}"></span>
+                  </p>
+                  <p>
+                    <strong>Số dư hiện tại:</strong>
+                    <span
+                      th:if="${user.balance >= 0}"
+                      class="badge bg-success fs-6"
+                      th:text="${#numbers.formatDecimal(user.balance, 0, 'COMMA', 0, 'POINT')} + ' VND'"
+                    ></span>
+                    <span
+                      th:unless="${user.balance >= 0}"
+                      class="badge bg-danger fs-6"
+                      th:text="${#numbers.formatDecimal(user.balance, 0, 'COMMA', 0, 'POINT')} + ' VND'"
+                    ></span>
+                  </p>
+                </div>
+              </div>
+
+              <!-- Deposit Form -->
+              <form
+                th:action="@{/users/{id}/deposit(id=${user.id})}"
+                method="post"
+              >
+                <div class="mb-3">
+                  <label for="amount" class="form-label"
+                    >Số tiền nạp (VND) *</label
+                  >
+                  <input
+                    type="number"
+                    class="form-control"
+                    id="amount"
+                    name="amount"
+                    min="1000"
+                    step="1000"
+                    required
+                  />
+                  <small class="form-text text-muted"
+                    >Số tiền tối thiểu là 1,000 VND</small
+                  >
+                </div>
+
+                <div class="alert alert-info">
+                  <h6 class="alert-heading">Lưu ý:</h6>
+                  <ul class="mb-0">
+                    <li>Số tiền sẽ được cộng vào tài khoản ngay lập tức</li>
+                    <li>Giao dịch sẽ được ghi nhận trong lịch sử</li>
+                    <li>Số dư âm có thể dẫn đến việc bị cấm tài khoản</li>
+                  </ul>
+                </div>
+
+                <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+                  <a
+                    th:href="@{/users/{id}(id=${user.id})}"
+                    class="btn btn-secondary me-md-2"
+                    >Hủy</a
+                  >
+                  <button type="submit" class="btn btn-success">
+                    <i class="fas fa-plus-circle"></i> Nạp tiền
+                  </button>
+                </div>
+              </form>
+            </div>
+          </div>
+        </div>
+
+        <div class="col-md-4">
+          <div class="card">
+            <div class="card-header">
+              <h6 class="card-title mb-0">Thông tin tài khoản</h6>
+            </div>
+            <div class="card-body">
+              <div class="text-center">
+                <i class="fas fa-wallet fa-3x text-success mb-3"></i>
+                <h5 th:text="${user.name}"></h5>
+                <p class="text-muted" th:text="${user.email}"></p>
+
+                <div class="mt-3">
+                  <h4
+                    th:if="${user.balance >= 0}"
+                    class="text-success"
+                    th:text="${#numbers.formatDecimal(user.balance, 0, 'COMMA', 0, 'POINT')} + ' VND'"
+                  ></h4>
+                  <h4
+                    th:unless="${user.balance >= 0}"
+                    class="text-danger"
+                    th:text="${#numbers.formatDecimal(user.balance, 0, 'COMMA', 0, 'POINT')} + ' VND'"
+                  ></h4>
+                  <small class="text-muted">Số dư hiện tại</small>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="card mt-3">
+            <div class="card-header">
+              <h6 class="card-title mb-0">Gói membership</h6>
+            </div>
+            <div class="card-body">
+              <div th:if="${user.membership}">
+                <div class="text-center">
+                  <span
+                    class="badge bg-info fs-6 mb-2"
+                    th:text="${user.membership.type}"
+                  ></span>
+                  <p
+                    class="small text-muted"
+                    th:text="${user.membership.description}"
+                  ></p>
+                  <p th:if="${user.membershipExpiresAt}" class="small">
+                    <strong>Hết hạn:</strong>
+                    <span
+                      th:text="${#temporals.format(user.membershipExpiresAt, 'dd/MM/yyyy')}"
+                    ></span>
+                  </p>
+                </div>
+              </div>
+              <div th:unless="${user.membership}">
+                <div class="text-center">
+                  <span class="badge bg-secondary fs-6 mb-2">Chưa có</span>
+                  <p class="small text-muted">
+                    Người dùng chưa mua gói membership
+                  </p>
+                  <a
+                    th:href="@{/users/{id}(id=${user.id})}"
+                    class="btn btn-sm btn-outline-primary"
+                  >
+                    <i class="fas fa-shopping-cart"></i> Mua ngay
+                  </a>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="card mt-3">
+            <div class="card-header">
+              <h6 class="card-title mb-0">Liên kết nhanh</h6>
+            </div>
+            <div class="card-body">
+              <div class="d-grid gap-2">
+                <a
+                  th:href="@{/users/{id}(id=${user.id})}"
+                  class="btn btn-outline-primary btn-sm"
+                >
+                  <i class="fas fa-user"></i> Thông tin người dùng
+                </a>
+                <a href="/users" class="btn btn-outline-info btn-sm">
+                  <i class="fas fa-list"></i> Danh sách người dùng
+                </a>
+                <a
+                  th:href="@{/borrows/user/{userId}(userId=${user.id})}"
+                  class="btn btn-outline-success btn-sm"
+                >
+                  <i class="fas fa-exchange-alt"></i> Lịch sử mượn
+                </a>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <script>
+      // Set default amount based on membership packages
+      document.addEventListener("DOMContentLoaded", function () {
+        const amountInput = document.getElementById("amount");
+
+        // Quick amount buttons
+        const quickAmounts = [20000, 50000, 100000, 200000];
+
+        // Create quick amount buttons
+        const quickButtonsContainer = document.createElement("div");
+        quickButtonsContainer.className = "mt-2";
+        quickButtonsContainer.innerHTML =
+          '<small class="text-muted">Số tiền nhanh:</small><br>';
+
+        quickAmounts.forEach((amount) => {
+          const button = document.createElement("button");
+          button.type = "button";
+          button.className = "btn btn-outline-secondary btn-sm me-1 mt-1";
+          button.textContent = amount.toLocaleString() + " VND";
+          button.onclick = () => (amountInput.value = amount);
+          quickButtonsContainer.appendChild(button);
+        });
+
+        amountInput.parentNode.appendChild(quickButtonsContainer);
+      });
+    </script>
+  </body>
+</html>

@@ -1,0 +1,222 @@
+<!DOCTYPE html>
+<html
+  lang="vi"
+  xmlns:th="http://www.thymeleaf.org"
+  th:replace="~{layout :: layout(~{::title}, ~{::content})}"
+>
+  <head>
+    <title>Chi tiết sách</title>
+  </head>
+  <body>
+    <div th:fragment="content">
+      <div
+        class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom"
+      >
+        <h1 class="h2">Chi tiết sách</h1>
+        <div class="btn-toolbar mb-2 mb-md-0">
+          <a href="/books" class="btn btn-secondary">
+            <i class="fas fa-arrow-left"></i> Quay lại
+          </a>
+        </div>
+      </div>
+
+      <div class="row">
+        <div class="col-md-8">
+          <div class="card">
+            <div class="card-header">
+              <h5 class="card-title mb-0" th:text="${book.title}">Tên sách</h5>
+            </div>
+            <div class="card-body">
+              <div class="row">
+                <div class="col-md-6">
+                  <table class="table table-borderless">
+                    <tr>
+                      <td><strong>ID:</strong></td>
+                      <td th:text="${book.id}"></td>
+                    </tr>
+                    <tr>
+                      <td><strong>ISBN:</strong></td>
+                      <td th:text="${book.isbn}"></td>
+                    </tr>
+                    <tr>
+                      <td><strong>Tổng số:</strong></td>
+                      <td th:text="${book.totalCopies}"></td>
+                    </tr>
+                    <tr>
+                      <td><strong>Có sẵn:</strong></td>
+                      <td>
+                        <span
+                          th:if="${book.availableCopies > 0}"
+                          class="badge bg-success fs-6"
+                          th:text="${book.availableCopies}"
+                        ></span>
+                        <span
+                          th:unless="${book.availableCopies > 0}"
+                          class="badge bg-danger fs-6"
+                          >Hết</span
+                        >
+                      </td>
+                    </tr>
+                    <tr>
+                      <td><strong>Ngày tạo:</strong></td>
+                      <td
+                        th:text="${#temporals.format(book.createdAt, 'dd/MM/yyyy HH:mm')}"
+                      ></td>
+                    </tr>
+                  </table>
+                </div>
+                <div class="col-md-6">
+                  <div th:if="${book.description}">
+                    <strong>Mô tả:</strong>
+                    <p th:text="${book.description}" class="mt-2"></p>
+                  </div>
+
+                  <div th:if="${book.authors and !book.authors.isEmpty()}">
+                    <strong>Tác giả:</strong>
+                    <ul class="mt-2">
+                      <li
+                        th:each="author : ${book.authors}"
+                        th:text="${author.name}"
+                      ></li>
+                    </ul>
+                  </div>
+                </div>
+              </div>
+
+              <div class="mt-4">
+                <div class="btn-group" role="group">
+                  <a
+                    th:href="@{/books/{id}/edit(id=${book.id})}"
+                    class="btn btn-warning"
+                  >
+                    <i class="fas fa-edit"></i> Chỉnh sửa
+                  </a>
+                  <a
+                    th:href="@{/borrows/create}"
+                    class="btn btn-primary"
+                    th:if="${book.availableCopies > 0}"
+                  >
+                    <i class="fas fa-hand-holding"></i> Mượn sách
+                  </a>
+                  <form
+                    th:action="@{/books/{id}/delete(id=${book.id})}"
+                    method="post"
+                    class="d-inline"
+                    onsubmit="return confirm('Bạn có chắc chắn muốn xóa sách này?')"
+                  >
+                    <button type="submit" class="btn btn-danger">
+                      <i class="fas fa-trash"></i> Xóa
+                    </button>
+                  </form>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Borrow History -->
+          <div
+            class="card mt-4"
+            th:if="${book.borrowRecords and !book.borrowRecords.isEmpty()}"
+          >
+            <div class="card-header">
+              <h6 class="card-title mb-0">Lịch sử mượn sách</h6>
+            </div>
+            <div class="card-body">
+              <div class="table-responsive">
+                <table class="table table-sm">
+                  <thead>
+                    <tr>
+                      <th>Người mượn</th>
+                      <th>Ngày mượn</th>
+                      <th>Hạn trả</th>
+                      <th>Trạng thái</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr th:each="record : ${book.borrowRecords}">
+                      <td th:text="${record.user.name}"></td>
+                      <td
+                        th:text="${#temporals.format(record.borrowDate, 'dd/MM/yyyy')}"
+                      ></td>
+                      <td
+                        th:text="${#temporals.format(record.dueDate, 'dd/MM/yyyy')}"
+                      ></td>
+                      <td>
+                        <span th:switch="${record.status}" class="badge">
+                          <span th:case="BORROWED" class="badge bg-warning"
+                            >Đang mượn</span
+                          >
+                          <span th:case="RETURNED" class="badge bg-success"
+                            >Đã trả</span
+                          >
+                          <span th:case="OVERDUE" class="badge bg-danger"
+                            >Quá hạn</span
+                          >
+                        </span>
+                      </td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="col-md-4">
+          <div class="card">
+            <div class="card-header">
+              <h6 class="card-title mb-0">Thông tin nhanh</h6>
+            </div>
+            <div class="card-body">
+              <div class="text-center">
+                <i class="fas fa-book fa-3x text-primary mb-3"></i>
+                <h5 th:text="${book.title}"></h5>
+                <p class="text-muted" th:text="${book.isbn}"></p>
+
+                <div class="mt-3">
+                  <div class="row text-center">
+                    <div class="col-6">
+                      <div class="border-end">
+                        <strong class="d-block" th:text="${book.totalCopies}"
+                          >0</strong
+                        >
+                        <small class="text-muted">Tổng số</small>
+                      </div>
+                    </div>
+                    <div class="col-6">
+                      <strong
+                        class="d-block text-success"
+                        th:text="${book.availableCopies}"
+                        >0</strong
+                      >
+                      <small class="text-muted">Có sẵn</small>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="card mt-3">
+            <div class="card-header">
+              <h6 class="card-title mb-0">Liên kết nhanh</h6>
+            </div>
+            <div class="card-body">
+              <div class="d-grid gap-2">
+                <a href="/books" class="btn btn-outline-primary btn-sm">
+                  <i class="fas fa-list"></i> Danh sách sách
+                </a>
+                <a href="/books/create" class="btn btn-outline-success btn-sm">
+                  <i class="fas fa-plus"></i> Thêm sách mới
+                </a>
+                <a href="/borrows" class="btn btn-outline-info btn-sm">
+                  <i class="fas fa-exchange-alt"></i> Quản lý mượn/trả
+                </a>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </body>
+</html>
