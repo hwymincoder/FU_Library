@@ -2,8 +2,10 @@ package com.example.demo.controller;
 
 import com.example.demo.entity.User;
 import com.example.demo.entity.Membership;
+import com.example.demo.model.LoginUser;
 import com.example.demo.service.UserService;
 import com.example.demo.service.MembershipService;
+import jakarta.servlet.http.HttpSession;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -11,6 +13,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.util.List;
+import java.util.Optional;
 
 @Controller
 @RequestMapping("/users")
@@ -74,8 +77,8 @@ public class UserController {
 
     @PostMapping("/{id}/edit")
     public String updateUser(@PathVariable Long id,
-            @ModelAttribute User user,
-            RedirectAttributes redirectAttributes) {
+                             @ModelAttribute User user,
+                             RedirectAttributes redirectAttributes) {
         try {
             user.setId(id);
             userService.saveUser(user);
@@ -110,8 +113,8 @@ public class UserController {
 
     @PostMapping("/{id}/deposit")
     public String depositMoney(@PathVariable Long id,
-            @RequestParam Double amount,
-            RedirectAttributes redirectAttributes) {
+                               @RequestParam Double amount,
+                               RedirectAttributes redirectAttributes) {
         try {
             if (amount <= 0) {
                 redirectAttributes.addFlashAttribute("error", "Số tiền phải lớn hơn 0!");
@@ -133,8 +136,8 @@ public class UserController {
 
     @PostMapping("/{id}/membership")
     public String purchaseMembership(@PathVariable Long id,
-            @RequestParam Long membershipId,
-            RedirectAttributes redirectAttributes) {
+                                     @RequestParam Long membershipId,
+                                     RedirectAttributes redirectAttributes) {
         try {
             boolean success = userService.purchaseMembership(id, membershipId);
             if (success) {
@@ -147,5 +150,75 @@ public class UserController {
             redirectAttributes.addFlashAttribute("error", "Lỗi khi mua membership: " + e.getMessage());
             return "redirect:/users/" + id;
         }
+    }
+
+
+    /*
+     * Profile
+     * */
+    @GetMapping("/profile")
+    public String viewProfile(Model model, HttpSession session) {
+        LoginUser loginUser = (LoginUser) session.getAttribute("loginUser");
+        if (loginUser == null) {
+            return "redirect:/login";
+        }
+
+        if (!"USER".equals(loginUser.getRole())) {
+            return "redirect:/dashboard";
+        }
+
+        User user = userService.getUserById(loginUser.getId())
+                .orElseThrow(() -> new RuntimeException("Không tìm thấy người dùng"));
+        model.addAttribute("user", user);
+
+        return "users/profile";
+    }
+
+    @PostMapping("/update-profile")
+    public String updateProfile(@RequestParam String name,
+                                @RequestParam String phone,
+                                HttpSession session,
+                                RedirectAttributes redirectAttributes) {
+        com.example.demo.model.LoginUser loginUser = (LoginUser) session.getAttribute("loginUser");
+        if (loginUser == null) {
+            return "redirect:/login";
+        }
+
+        try {
+            User updatedUser = userService.updateUserProfile(loginUser.getId(), name, phone);
+            loginUser.setName(updatedUser.getName());
+            session.setAttribute("loginUser", loginUser);
+            redirectAttributes.addFlashAttribute("success", "Thông tin cá nhân đã được cập nhật thành công!");
+        } catch (Exception e) {
+            redirectAttributes.addFlashAttribute("error", "Không thể cập nhật thông tin: " + e.getMessage());
+        }
+
+        return "redirect:/users/profile";
+    }
+    
+    @PostMapping("/change-password")
+    public String changePassword(@RequestParam String currentPassword,
+                                 @RequestParam String newPassword,
+                                 @RequestParam String confirmPassword,
+                                 HttpSession session,
+                                 RedirectAttributes redirectAttributes) {
+        com.example.demo.model.LoginUser loginUser = (LoginUser) session.getAttribute("loginUser");
+        if (loginUser == null) {
+            return "redirect:/login";
+        }
+
+        if (!newPassword.equals(confirmPassword)) {
+            redirectAttributes.addFlashAttribute("error", "Mật khẩu mới và xác nhận mật khẩu không khớp!");
+            return "redirect:/users/profile";
+        }
+
+        try {
+            userService.changePassword(loginUser.getId(), currentPassword, newPassword);
+            redirectAttributes.addFlashAttribute("success", "Mật khẩu đã được thay đổi thành công!");
+        } catch (Exception e) {
+            redirectAttributes.addFlashAttribute("error", "Không thể đổi mật khẩu: " + e.getMessage());
+        }
+
+        return "redirect:/users/profile";
     }
 }

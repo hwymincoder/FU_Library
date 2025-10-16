@@ -1,0 +1,238 @@
+<!DOCTYPE html>
+<html
+  xmlns:th="http://www.thymeleaf.org"
+  th:replace="~{layout :: layout(~{::title}, ~{::section})}"
+>
+  <head>
+    <title>Thông tin tài khoản | Hệ thống quản lý thư viện</title>
+  </head>
+  <body>
+    <section>
+      <div class="container">
+        <div class="row mb-4">
+          <div class="col">
+            <h2><i class="fas fa-user-circle me-2"></i>Thông tin tài khoản</h2>
+          </div>
+        </div>
+
+        <div class="row">
+          <div class="col-md-4">
+            <div class="card mb-4">
+              <div class="card-body text-center">
+                <i class="fas fa-user-circle fa-5x mb-3 text-primary"></i>
+                <h5 class="card-title" th:text="${user.name}">
+                  Tên người dùng
+                </h5>
+                <p class="text-muted" th:text="${user.email}">Email</p>
+                <div class="d-flex justify-content-center mt-3">
+                  <a
+                    href="#personalInfo"
+                    class="btn btn-sm btn-outline-primary mx-1"
+                    data-bs-toggle="collapse"
+                  >
+                    <i class="fas fa-edit"></i> Thay đổi thông tin
+                  </a>
+                  <a
+                    href="#passwordChange"
+                    class="btn btn-sm btn-outline-secondary mx-1"
+                    data-bs-toggle="collapse"
+                  >
+                    <i class="fas fa-key"></i> Đổi mật khẩu
+                  </a>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="col-md-8">
+            <!-- User Info Card -->
+            <div class="card mb-4">
+              <div class="card-header">
+                <h5 class="mb-0">
+                  <i class="fas fa-info-circle me-2"></i>Chi tiết tài khoản
+                </h5>
+              </div>
+              <div class="card-body">
+                <div class="row mb-2">
+                  <div class="col-sm-4 text-muted">Họ và tên:</div>
+                  <div class="col-sm-8" th:text="${user.name}">
+                    Nguyễn Văn A
+                  </div>
+                </div>
+                <div class="row mb-2">
+                  <div class="col-sm-4 text-muted">Email:</div>
+                  <div class="col-sm-8" th:text="${user.email}">
+                    email@example.com
+                  </div>
+                </div>
+                <div class="row mb-2">
+                  <div class="col-sm-4 text-muted">Số điện thoại:</div>
+                  <div class="col-sm-8" th:text="${user.phone}">0123456789</div>
+                </div>
+                <div class="row mb-2">
+                  <div class="col-sm-4 text-muted">Số dư tài khoản:</div>
+                  <div class="col-sm-8">
+                    <span
+                      th:text="${#numbers.formatDecimal(user.balance, 0, 'COMMA', 0, 'POINT')} + ' VND'"
+                      >100,000 VND</span
+                    >
+                  </div>
+                </div>
+                <div class="row mb-2">
+                  <div class="col-sm-4 text-muted">Gói thành viên:</div>
+                  <div class="col-sm-8">
+                    <span
+                      th:if="${user.membership != null}"
+                      th:text="${user.membership.type}"
+                      >Cao cấp</span
+                    >
+                    <span
+                      th:unless="${user.membership != null}"
+                      class="text-secondary"
+                      >Không có</span
+                    >
+                  </div>
+                </div>
+                <div class="row" th:if="${user.membershipExpiresAt != null}">
+                  <div class="col-sm-4 text-muted">Hạn thành viên:</div>
+                  <div
+                    class="col-sm-8"
+                    th:text="${#temporals.format(user.membershipExpiresAt, 'dd/MM/yyyy HH:mm')}"
+                  >
+                    31/12/2023
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Edit Personal Info Form -->
+            <div class="collapse mb-4" id="personalInfo">
+              <div class="card">
+                <div class="card-header">
+                  <h5 class="mb-0">
+                    <i class="fas fa-edit me-2"></i>Chỉnh sửa thông tin cá nhân
+                  </h5>
+                </div>
+                <div class="card-body">
+                  <form th:action="@{/users/update-profile}" method="post">
+                    <div class="mb-3">
+                      <label for="name" class="form-label">Họ và tên</label>
+                      <input
+                        type="text"
+                        class="form-control"
+                        id="name"
+                        name="name"
+                        th:value="${user.name}"
+                        required
+                      />
+                    </div>
+                    <div class="mb-3">
+                      <label for="email" class="form-label">Email</label>
+                      <input
+                        type="email"
+                        class="form-control"
+                        id="email"
+                        name="email"
+                        th:value="${user.email}"
+                        readonly
+                      />
+                      <small class="text-muted">Email không thể thay đổi</small>
+                    </div>
+                    <div class="mb-3">
+                      <label for="phone" class="form-label"
+                        >Số điện thoại</label
+                      >
+                      <input
+                        type="text"
+                        class="form-control"
+                        id="phone"
+                        name="phone"
+                        th:value="${user.phone}"
+                        required
+                      />
+                    </div>
+                    <button type="submit" class="btn btn-primary">
+                      Cập nhật thông tin
+                    </button>
+                    <button
+                      type="button"
+                      class="btn btn-secondary"
+                      data-bs-toggle="collapse"
+                      data-bs-target="#personalInfo"
+                    >
+                      Hủy
+                    </button>
+                  </form>
+                </div>
+              </div>
+            </div>
+
+            <!-- Change Password Form -->
+            <div class="collapse" id="passwordChange">
+              <div class="card">
+                <div class="card-header">
+                  <h5 class="mb-0">
+                    <i class="fas fa-key me-2"></i>Đổi mật khẩu
+                  </h5>
+                </div>
+                <div class="card-body">
+                  <form th:action="@{/users/change-password}" method="post">
+                    <div class="mb-3">
+                      <label for="currentPassword" class="form-label"
+                        >Mật khẩu hiện tại</label
+                      >
+                      <input
+                        type="password"
+                        class="form-control"
+                        id="currentPassword"
+                        name="currentPassword"
+                        required
+                      />
+                    </div>
+                    <div class="mb-3">
+                      <label for="newPassword" class="form-label"
+                        >Mật khẩu mới</label
+                      >
+                      <input
+                        type="password"
+                        class="form-control"
+                        id="newPassword"
+                        name="newPassword"
+                        required
+                        minlength="6"
+                      />
+                    </div>
+                    <div class="mb-3">
+                      <label for="confirmPassword" class="form-label"
+                        >Xác nhận mật khẩu mới</label
+                      >
+                      <input
+                        type="password"
+                        class="form-control"
+                        id="confirmPassword"
+                        name="confirmPassword"
+                        required
+                        minlength="6"
+                      />
+                    </div>
+                    <button type="submit" class="btn btn-primary">
+                      Đổi mật khẩu
+                    </button>
+                    <button
+                      type="button"
+                      class="btn btn-secondary"
+                      data-bs-toggle="collapse"
+                      data-bs-target="#passwordChange"
+                    >
+                      Hủy
+                    </button>
+                  </form>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+  </body>
+</html>
