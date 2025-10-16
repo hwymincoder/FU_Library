@@ -90,15 +90,85 @@ public class UserPageController {
         User user = userOpt.get();
         model.addAttribute("user", user);
 
-        // Lấy lịch sử mượn sách
-        List<BorrowRecord> borrowRecords = borrowService.getUserBorrowRecords(loginUser.getId());
-        model.addAttribute("borrowRecords", borrowRecords);
+        return "users/profile";
+    }
 
-        // Lấy các sách đang mượn
+    @GetMapping("/history")
+    public String borrowHistory(Model model, HttpSession session) {
+        LoginUser loginUser = (LoginUser) session.getAttribute("loginUser");
+        
+        if (loginUser == null || !loginUser.isUser()) {
+            return "redirect:/login";
+        }
+
+        // Lấy tất cả lịch sử mượn
+        List<BorrowRecord> allBorrows = borrowService.getUserBorrowRecords(loginUser.getId());
+        model.addAttribute("allBorrows", allBorrows);
+
+        // Lấy sách đang mượn
         List<BorrowRecord> activeBorrows = borrowService.getActiveBorrowsByUser(loginUser.getId());
         model.addAttribute("activeBorrows", activeBorrows);
 
-        return "user/profile";
+        // Thống kê
+        long returnedCount = allBorrows.stream()
+            .filter(b -> b.getStatus() == BorrowRecord.Status.RETURNED)
+            .count();
+        model.addAttribute("returnedCount", returnedCount);
+
+        long overdueCount = allBorrows.stream()
+            .filter(b -> b.getStatus() == BorrowRecord.Status.OVERDUE)
+            .count();
+        model.addAttribute("overdueCount", overdueCount);
+
+        return "user/history";
+    }
+
+    @PostMapping("/update-profile")
+    public String updateProfile(@RequestParam String name,
+                                @RequestParam String phone,
+                                HttpSession session,
+                                RedirectAttributes redirectAttributes) {
+        LoginUser loginUser = (LoginUser) session.getAttribute("loginUser");
+        if (loginUser == null || !loginUser.isUser()) {
+            return "redirect:/login";
+        }
+
+        try {
+            User updatedUser = userService.updateUserProfile(loginUser.getId(), name, phone);
+            loginUser.setName(updatedUser.getName());
+            session.setAttribute("loginUser", loginUser);
+            redirectAttributes.addFlashAttribute("success", "Thông tin cá nhân đã được cập nhật thành công!");
+        } catch (Exception e) {
+            redirectAttributes.addFlashAttribute("error", "Không thể cập nhật thông tin: " + e.getMessage());
+        }
+
+        return "redirect:/user/profile";
+    }
+
+    @PostMapping("/change-password")
+    public String changePassword(@RequestParam String currentPassword,
+                                 @RequestParam String newPassword,
+                                 @RequestParam String confirmPassword,
+                                 HttpSession session,
+                                 RedirectAttributes redirectAttributes) {
+        LoginUser loginUser = (LoginUser) session.getAttribute("loginUser");
+        if (loginUser == null || !loginUser.isUser()) {
+            return "redirect:/login";
+        }
+
+        if (!newPassword.equals(confirmPassword)) {
+            redirectAttributes.addFlashAttribute("error", "Mật khẩu mới và xác nhận mật khẩu không khớp!");
+            return "redirect:/user/profile";
+        }
+
+        try {
+            userService.changePassword(loginUser.getId(), currentPassword, newPassword);
+            redirectAttributes.addFlashAttribute("success", "Mật khẩu đã được thay đổi thành công!");
+        } catch (Exception e) {
+            redirectAttributes.addFlashAttribute("error", "Không thể đổi mật khẩu: " + e.getMessage());
+        }
+
+        return "redirect:/user/profile";
     }
 
     @PostMapping("/cart/add")

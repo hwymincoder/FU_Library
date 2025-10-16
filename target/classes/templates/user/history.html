@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html
+  lang="vi"
+  xmlns:th="http://www.thymeleaf.org"
+  th:replace="~{user/layout :: layout(~{::title}, ~{::content})}"
+>
+  <head>
+    <title>Lịch sử mượn sách</title>
+  </head>
+  <body>
+    <div th:fragment="content">
+      <!-- Page Header -->
+      <div class="content-card">
+        <div class="d-flex justify-content-between align-items-center">
+          <h2 class="mb-0"><i class="fas fa-history me-2"></i>Lịch sử mượn sách</h2>
+          <a href="/user/home" class="btn btn-outline-primary">
+            <i class="fas fa-arrow-left me-2"></i>Quay lại
+          </a>
+        </div>
+      </div>
+
+      <!-- Statistics -->
+      <div class="row mb-4">
+        <div class="col-md-3">
+          <div class="content-card bg-primary text-white">
+            <div class="d-flex justify-content-between align-items-center">
+              <div>
+                <h6 class="mb-0">Tổng số lần mượn</h6>
+                <h3 class="mb-0 mt-2" th:text="${#lists.size(allBorrows)}">0</h3>
+              </div>
+              <i class="fas fa-book fa-3x opacity-50"></i>
+            </div>
+          </div>
+        </div>
+        <div class="col-md-3">
+          <div class="content-card bg-warning text-white">
+            <div class="d-flex justify-content-between align-items-center">
+              <div>
+                <h6 class="mb-0">Đang mượn</h6>
+                <h3 class="mb-0 mt-2" th:text="${#lists.size(activeBorrows)}">0</h3>
+              </div>
+              <i class="fas fa-book-reader fa-3x opacity-50"></i>
+            </div>
+          </div>
+        </div>
+        <div class="col-md-3">
+          <div class="content-card bg-success text-white">
+            <div class="d-flex justify-content-between align-items-center">
+              <div>
+                <h6 class="mb-0">Đã trả</h6>
+                <h3 class="mb-0 mt-2" th:text="${returnedCount}">0</h3>
+              </div>
+              <i class="fas fa-check-circle fa-3x opacity-50"></i>
+            </div>
+          </div>
+        </div>
+        <div class="col-md-3">
+          <div class="content-card bg-danger text-white">
+            <div class="d-flex justify-content-between align-items-center">
+              <div>
+                <h6 class="mb-0">Quá hạn</h6>
+                <h3 class="mb-0 mt-2" th:text="${overdueCount}">0</h3>
+              </div>
+              <i class="fas fa-exclamation-triangle fa-3x opacity-50"></i>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Sách đang mượn -->
+      <div class="content-card" th:if="${!#lists.isEmpty(activeBorrows)}">
+        <h4 class="mb-4">
+          <i class="fas fa-book-reader me-2"></i>Sách đang mượn 
+          (<span th:text="${#lists.size(activeBorrows)}">0</span>)
+        </h4>
+        
+        <div class="table-responsive">
+          <table class="table table-hover">
+            <thead class="table-warning">
+              <tr>
+                <th><i class="fas fa-book me-2"></i>Tên sách</th>
+                <th><i class="fas fa-calendar-alt me-2"></i>Ngày mượn</th>
+                <th><i class="fas fa-calendar-check me-2"></i>Ngày hẹn trả</th>
+                <th><i class="fas fa-hourglass-half me-2"></i>Còn lại</th>
+                <th><i class="fas fa-info-circle me-2"></i>Trạng thái</th>
+                <th><i class="fas fa-dollar-sign me-2"></i>Phạt</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr th:each="borrow : ${activeBorrows}">
+                <td>
+                  <strong th:text="${borrow.book.title}">Book Title</strong>
+                  <br><small class="text-muted" th:text="${borrow.book.isbn}">ISBN</small>
+                </td>
+                <td th:text="${#temporals.format(borrow.borrowDate, 'dd/MM/yyyy')}">01/01/2024</td>
+                <td th:text="${#temporals.format(borrow.dueDate, 'dd/MM/yyyy')}">15/01/2024</td>
+                <td>
+                  <span th:if="${#temporals.daysBetween(#temporals.createNow(), borrow.dueDate) >= 0}"
+                    class="badge bg-success"
+                    th:text="${#temporals.daysBetween(#temporals.createNow(), borrow.dueDate)} + ' ngày'">
+                    5 ngày
+                  </span>
+                  <span th:if="${#temporals.daysBetween(#temporals.createNow(), borrow.dueDate) < 0}"
+                    class="badge bg-danger"
+                    th:text="'Trễ ' + ${-#temporals.daysBetween(#temporals.createNow(), borrow.dueDate)} + ' ngày'">
+                    Trễ 2 ngày
+                  </span>
+                </td>
+                <td>
+                  <span th:if="${borrow.status.name() == 'BORROWED'}" class="badge bg-warning">
+                    <i class="fas fa-clock me-1"></i>Đang mượn
+                  </span>
+                  <span th:if="${borrow.status.name() == 'OVERDUE'}" class="badge bg-danger">
+                    <i class="fas fa-exclamation-triangle me-1"></i>Quá hạn
+                  </span>
+                </td>
+                <td>
+                  <span th:if="${borrow.fineAmount > 0}" class="text-danger fw-bold">
+                    <span th:text="${#numbers.formatDecimal(borrow.fineAmount, 0, 'COMMA', 0, 'POINT')} + ' VNĐ'">0 VNĐ</span>
+                  </span>
+                  <span th:if="${borrow.fineAmount <= 0}" class="text-muted">-</span>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- Lịch sử tất cả -->
+      <div class="content-card">
+        <h4 class="mb-4">
+          <i class="fas fa-list me-2"></i>Toàn bộ lịch sử 
+          (<span th:text="${#lists.size(allBorrows)}">0</span> giao dịch)
+        </h4>
+        
+        <div th:if="${#lists.isEmpty(allBorrows)}" class="alert alert-info text-center">
+          <i class="fas fa-info-circle fa-3x mb-3 d-block"></i>
+          <h5>Bạn chưa mượn sách lần nào</h5>
+          <p class="mb-0">Hãy khám phá thư viện và mượn cuốn sách đầu tiên nhé!</p>
+          <a href="/user/home" class="btn btn-primary mt-3">
+            <i class="fas fa-book me-2"></i>Khám phá sách
+          </a>
+        </div>
+
+        <div class="table-responsive" th:if="${!#lists.isEmpty(allBorrows)}">
+          <table class="table table-hover table-striped">
+            <thead class="table-light">
+              <tr>
+                <th>#</th>
+                <th><i class="fas fa-book me-2"></i>Tên sách</th>
+                <th><i class="fas fa-calendar-alt me-2"></i>Ngày mượn</th>
+                <th><i class="fas fa-calendar-check me-2"></i>Ngày hẹn trả</th>
+                <th><i class="fas fa-calendar-times me-2"></i>Ngày trả</th>
+                <th><i class="fas fa-info-circle me-2"></i>Trạng thái</th>
+                <th><i class="fas fa-dollar-sign me-2"></i>Tiền phạt</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr th:each="borrow, iterStat : ${allBorrows}">
+                <td><span class="badge bg-secondary" th:text="${iterStat.count}">1</span></td>
+                <td>
+                  <strong th:text="${borrow.book.title}">Book Title</strong>
+                  <br><small class="text-muted" th:text="${borrow.book.isbn}">ISBN</small>
+                </td>
+                <td th:text="${#temporals.format(borrow.borrowDate, 'dd/MM/yyyy')}">01/01/2024</td>
+                <td th:text="${#temporals.format(borrow.dueDate, 'dd/MM/yyyy')}">15/01/2024</td>
+                <td>
+                  <span th:if="${borrow.returnDate != null}" 
+                    th:text="${#temporals.format(borrow.returnDate, 'dd/MM/yyyy')}">20/01/2024</span>
+                  <span th:if="${borrow.returnDate == null}" class="text-muted">-</span>
+                </td>
+                <td>
+                  <span th:if="${borrow.status.name() == 'BORROWED'}" class="badge bg-warning">
+                    <i class="fas fa-clock me-1"></i>Đang mượn
+                  </span>
+                  <span th:if="${borrow.status.name() == 'RETURNED'}" class="badge bg-success">
+                    <i class="fas fa-check-circle me-1"></i>Đã trả
+                  </span>
+                  <span th:if="${borrow.status.name() == 'OVERDUE'}" class="badge bg-danger">
+                    <i class="fas fa-exclamation-triangle me-1"></i>Quá hạn
+                  </span>
+                </td>
+                <td>
+                  <span th:if="${borrow.fineAmount > 0}" class="text-danger fw-bold">
+                    <span th:text="${#numbers.formatDecimal(borrow.fineAmount, 0, 'COMMA', 0, 'POINT')} + ' VNĐ'">0 VNĐ</span>
+                  </span>
+                  <span th:if="${borrow.fineAmount <= 0}" class="text-muted">-</span>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </body>
+</html>
+

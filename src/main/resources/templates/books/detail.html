@@ -108,13 +108,6 @@
                   >
                     <i class="fas fa-edit me-2"></i> Chỉnh sửa
                   </a>
-                  <a
-                    href="/manager/borrows/create"
-                    class="btn btn-primary"
-                    th:if="${book.availableCopies > 0}"
-                  >
-                    <i class="fas fa-hand-holding me-2"></i> Mượn sách
-                  </a>
                   <form
                     th:action="@{/manager/books/{id}/delete(id=${book.id})}"
                     method="post"

@@ -1,14 +1,14 @@
 <!DOCTYPE html>
 <html
   xmlns:th="http://www.thymeleaf.org"
-  th:replace="~{layout :: layout(~{::title}, ~{::section})}"
+  th:replace="~{user/layout :: layout(~{::title}, ~{::content})}"
 >
   <head>
     <title>Thông tin tài khoản | Hệ thống quản lý thư viện</title>
   </head>
   <body>
-    <section>
-      <div class="container">
+    <div th:fragment="content">
+      <div class="content-card">
         <div class="row mb-4">
           <div class="col">
             <h2><i class="fas fa-user-circle me-2"></i>Thông tin tài khoản</h2>
@@ -17,7 +17,7 @@
 
         <div class="row">
           <div class="col-md-4">
-            <div class="card mb-4">
+            <div class="card mb-4 shadow-sm">
               <div class="card-body text-center">
                 <i class="fas fa-user-circle fa-5x mb-3 text-primary"></i>
                 <h5 class="card-title" th:text="${user.name}">
@@ -46,8 +46,8 @@
 
           <div class="col-md-8">
             <!-- User Info Card -->
-            <div class="card mb-4">
-              <div class="card-header">
+            <div class="card mb-4 shadow-sm">
+              <div class="card-header bg-primary text-white">
                 <h5 class="mb-0">
                   <i class="fas fa-info-circle me-2"></i>Chi tiết tài khoản
                 </h5>
@@ -55,7 +55,7 @@
               <div class="card-body">
                 <div class="row mb-2">
                   <div class="col-sm-4 text-muted">Họ và tên:</div>
-                  <div class="col-sm-8" th:text="${user.name}">
+                  <div class="col-sm-8 fw-bold" th:text="${user.name}">
                     Nguyễn Văn A
                   </div>
                 </div>
@@ -72,7 +72,7 @@
                 <div class="row mb-2">
                   <div class="col-sm-4 text-muted">Số dư tài khoản:</div>
                   <div class="col-sm-8">
-                    <span
+                    <span class="text-success fw-bold"
                       th:text="${#numbers.formatDecimal(user.balance, 0, 'COMMA', 0, 'POINT')} + ' VND'"
                       >100,000 VND</span
                     >
@@ -83,12 +83,13 @@
                   <div class="col-sm-8">
                     <span
                       th:if="${user.membership != null}"
+                      class="badge bg-warning"
                       th:text="${user.membership.type}"
                       >Cao cấp</span
                     >
                     <span
                       th:unless="${user.membership != null}"
-                      class="text-secondary"
+                      class="badge bg-secondary"
                       >Không có</span
                     >
                   </div>
@@ -107,14 +108,14 @@
 
             <!-- Edit Personal Info Form -->
             <div class="collapse mb-4" id="personalInfo">
-              <div class="card">
-                <div class="card-header">
+              <div class="card shadow-sm">
+                <div class="card-header bg-info text-white">
                   <h5 class="mb-0">
                     <i class="fas fa-edit me-2"></i>Chỉnh sửa thông tin cá nhân
                   </h5>
                 </div>
                 <div class="card-body">
-                  <form th:action="@{/users/update-profile}" method="post">
+                  <form th:action="@{/user/update-profile}" method="post">
                     <div class="mb-3">
                       <label for="name" class="form-label">Họ và tên</label>
                       <input
@@ -152,7 +153,7 @@
                       />
                     </div>
                     <button type="submit" class="btn btn-primary">
-                      Cập nhật thông tin
+                      <i class="fas fa-save me-2"></i>Cập nhật thông tin
                     </button>
                     <button
                       type="button"
@@ -160,7 +161,7 @@
                       data-bs-toggle="collapse"
                       data-bs-target="#personalInfo"
                     >
-                      Hủy
+                      <i class="fas fa-times me-2"></i>Hủy
                     </button>
                   </form>
                 </div>
@@ -169,14 +170,14 @@
 
             <!-- Change Password Form -->
             <div class="collapse" id="passwordChange">
-              <div class="card">
-                <div class="card-header">
+              <div class="card shadow-sm">
+                <div class="card-header bg-warning text-dark">
                   <h5 class="mb-0">
                     <i class="fas fa-key me-2"></i>Đổi mật khẩu
                   </h5>
                 </div>
                 <div class="card-body">
-                  <form th:action="@{/users/change-password}" method="post">
+                  <form th:action="@{/user/change-password}" method="post">
                     <div class="mb-3">
                       <label for="currentPassword" class="form-label"
                         >Mật khẩu hiện tại</label
@@ -201,6 +202,7 @@
                         required
                         minlength="6"
                       />
+                      <small class="text-muted">Tối thiểu 6 ký tự</small>
                     </div>
                     <div class="mb-3">
                       <label for="confirmPassword" class="form-label"
@@ -215,8 +217,8 @@
                         minlength="6"
                       />
                     </div>
-                    <button type="submit" class="btn btn-primary">
-                      Đổi mật khẩu
+                    <button type="submit" class="btn btn-warning">
+                      <i class="fas fa-check me-2"></i>Đổi mật khẩu
                     </button>
                     <button
                       type="button"
@@ -224,7 +226,7 @@
                       data-bs-toggle="collapse"
                       data-bs-target="#passwordChange"
                     >
-                      Hủy
+                      <i class="fas fa-times me-2"></i>Hủy
                     </button>
                   </form>
                 </div>
@@ -233,6 +235,6 @@
           </div>
         </div>
       </div>
-    </section>
+    </div>
   </body>
 </html>
