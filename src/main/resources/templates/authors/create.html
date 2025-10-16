@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html
+  lang="vi"
+  xmlns:th="http://www.thymeleaf.org"
+  th:replace="~{layout :: layout(~{::title}, ~{::content})}"
+>
+  <head>
+    <title>Thêm tác giả mới</title>
+  </head>
+  <body>
+    <div th:fragment="content">
+      <div
+        class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom"
+      >
+        <h1 class="h2">Thêm tác giả mới</h1>
+        <div class="btn-toolbar mb-2 mb-md-0">
+          <a href="/authors" class="btn btn-secondary">
+            <i class="fas fa-arrow-left"></i> Quay lại
+          </a>
+        </div>
+      </div>
+
+      <div class="row">
+        <div class="col-md-8">
+          <div class="card">
+            <div class="card-header">
+              <h5 class="card-title mb-0">Thông tin tác giả</h5>
+            </div>
+            <div class="card-body">
+              <form
+                th:action="@{/authors/create}"
+                th:object="${author}"
+                method="post"
+              >
+                <div class="mb-3">
+                  <label for="name" class="form-label">Tên tác giả *</label>
+                  <input
+                    type="text"
+                    class="form-control"
+                    id="name"
+                    th:field="*{name}"
+                    required
+                  />
+                </div>
+
+                <div class="mb-3">
+                  <label for="nationality" class="form-label">Quốc tịch</label>
+                  <input
+                    type="text"
+                    class="form-control"
+                    id="nationality"
+                    th:field="*{nationality}"
+                  />
+                </div>
+
+                <div class="mb-3">
+                  <label for="biography" class="form-label">Tiểu sử</label>
+                  <textarea
+                    class="form-control"
+                    id="biography"
+                    th:field="*{biography}"
+                    rows="4"
+                  ></textarea>
+                  <small class="form-text text-muted"
+                    >Mô tả về cuộc đời và sự nghiệp của tác giả</small
+                  >
+                </div>
+
+                <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+                  <a href="/authors" class="btn btn-secondary me-md-2">Hủy</a>
+                  <button type="submit" class="btn btn-primary">
+                    <i class="fas fa-save"></i> Lưu tác giả
+                  </button>
+                </div>
+              </form>
+            </div>
+          </div>
+        </div>
+
+        <div class="col-md-4">
+          <div class="card">
+            <div class="card-header">
+              <h6 class="card-title mb-0">Hướng dẫn</h6>
+            </div>
+            <div class="card-body">
+              <ul class="list-unstyled">
+                <li>
+                  <i class="fas fa-info-circle text-primary"></i> Tên tác giả là
+                  bắt buộc
+                </li>
+                <li>
+                  <i class="fas fa-info-circle text-primary"></i> Quốc tịch có
+                  thể để trống
+                </li>
+                <li>
+                  <i class="fas fa-info-circle text-primary"></i> Tiểu sử giúp
+                  người đọc hiểu thêm về tác giả
+                </li>
+                <li>
+                  <i class="fas fa-info-circle text-primary"></i> Một tác giả có
+                  thể viết nhiều sách
+                </li>
+              </ul>
+            </div>
+          </div>
+
+          <div class="card mt-3">
+            <div class="card-header">
+              <h6 class="card-title mb-0">Liên kết nhanh</h6>
+            </div>
+            <div class="card-body">
+              <div class="d-grid gap-2">
+                <a href="/authors" class="btn btn-outline-primary btn-sm">
+                  <i class="fas fa-list"></i> Danh sách tác giả
+                </a>
+                <a href="/books/create" class="btn btn-outline-success btn-sm">
+                  <i class="fas fa-book"></i> Thêm sách mới
+                </a>
+                <a href="/books" class="btn btn-outline-info btn-sm">
+                  <i class="fas fa-list"></i> Quản lý sách
+                </a>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </body>
+</html>

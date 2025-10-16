@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html
+  lang="vi"
+  xmlns:th="http://www.thymeleaf.org"
+  th:replace="~{layout :: layout(~{::title}, ~{::content})}"
+>
+  <head>
+    <title>Trang chủ</title>
+  </head>
+  <body>
+    <div th:fragment="content">
+      <div
+        class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom"
+      >
+        <h1 class="h2">Trang chủ</h1>
+      </div>
+
+      <!-- Statistics Cards -->
+      <div class="row">
+        <div class="col-xl-3 col-md-6 mb-4">
+          <div class="card border-left-primary shadow h-100 py-2">
+            <div class="card-body">
+              <div class="row no-gutters align-items-center">
+                <div class="col mr-2">
+                  <div
+                    class="text-xs font-weight-bold text-primary text-uppercase mb-1"
+                  >
+                    Tổng số sách
+                  </div>
+                  <div
+                    class="h5 mb-0 font-weight-bold text-gray-800"
+                    th:text="${totalBooks}"
+                  >
+                    0
+                  </div>
+                </div>
+                <div class="col-auto">
+                  <i class="fas fa-book fa-2x text-gray-300"></i>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="col-xl-3 col-md-6 mb-4">
+          <div class="card border-left-success shadow h-100 py-2">
+            <div class="card-body">
+              <div class="row no-gutters align-items-center">
+                <div class="col mr-2">
+                  <div
+                    class="text-xs font-weight-bold text-success text-uppercase mb-1"
+                  >
+                    Sách có sẵn
+                  </div>
+                  <div
+                    class="h5 mb-0 font-weight-bold text-gray-800"
+                    th:text="${availableBooks}"
+                  >
+                    0
+                  </div>
+                </div>
+                <div class="col-auto">
+                  <i class="fas fa-check-circle fa-2x text-gray-300"></i>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="col-xl-3 col-md-6 mb-4">
+          <div class="card border-left-info shadow h-100 py-2">
+            <div class="card-body">
+              <div class="row no-gutters align-items-center">
+                <div class="col mr-2">
+                  <div
+                    class="text-xs font-weight-bold text-info text-uppercase mb-1"
+                  >
+                    Tổng người dùng
+                  </div>
+                  <div
+                    class="h5 mb-0 font-weight-bold text-gray-800"
+                    th:text="${totalUsers}"
+                  >
+                    0
+                  </div>
+                </div>
+                <div class="col-auto">
+                  <i class="fas fa-users fa-2x text-gray-300"></i>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="col-xl-3 col-md-6 mb-4">
+          <div class="card border-left-warning shadow h-100 py-2">
+            <div class="card-body">
+              <div class="row no-gutters align-items-center">
+                <div class="col mr-2">
+                  <div
+                    class="text-xs font-weight-bold text-warning text-uppercase mb-1"
+                  >
+                    Đang mượn
+                  </div>
+                  <div
+                    class="h5 mb-0 font-weight-bold text-gray-800"
+                    th:text="${activeBorrows}"
+                  >
+                    0
+                  </div>
+                </div>
+                <div class="col-auto">
+                  <i class="fas fa-exchange-alt fa-2x text-gray-300"></i>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Quick Actions -->
+      <div class="row">
+        <div class="col-lg-6">
+          <div class="card shadow mb-4">
+            <div class="card-header py-3">
+              <h6 class="m-0 font-weight-bold text-primary">Thao tác nhanh</h6>
+            </div>
+            <div class="card-body">
+              <div class="row">
+                <div class="col-md-6 mb-3">
+                  <a href="/books/create" class="btn btn-primary btn-block">
+                    <i class="fas fa-plus"></i> Thêm sách mới
+                  </a>
+                </div>
+                <div class="col-md-6 mb-3">
+                  <a href="/authors/create" class="btn btn-success btn-block">
+                    <i class="fas fa-user-plus"></i> Thêm tác giả
+                  </a>
+                </div>
+                <div class="col-md-6 mb-3">
+                  <a href="/users/create" class="btn btn-info btn-block">
+                    <i class="fas fa-user-plus"></i> Thêm người dùng
+                  </a>
+                </div>
+                <div class="col-md-6 mb-3">
+                  <a href="/borrows/create" class="btn btn-warning btn-block">
+                    <i class="fas fa-hand-holding"></i> Mượn sách
+                  </a>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="col-lg-6">
+          <div class="card shadow mb-4">
+            <div class="card-header py-3">
+              <h6 class="m-0 font-weight-bold text-primary">Thống kê</h6>
+            </div>
+            <div class="card-body">
+              <div class="list-group list-group-flush">
+                <a
+                  href="/books/available"
+                  class="list-group-item list-group-item-action"
+                >
+                  <i class="fas fa-book text-success"></i> Sách có sẵn để mượn
+                </a>
+                <a
+                  href="/borrows/overdue"
+                  class="list-group-item list-group-item-action"
+                >
+                  <i class="fas fa-exclamation-triangle text-warning"></i> Sách
+                  quá hạn
+                </a>
+                <a href="/users" class="list-group-item list-group-item-action">
+                  <i class="fas fa-users text-info"></i> Danh sách người dùng
+                </a>
+                <a
+                  href="/borrows/active"
+                  class="list-group-item list-group-item-action"
+                >
+                  <i class="fas fa-exchange-alt text-primary"></i> Đang mượn
+                  sách
+                </a>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </body>
+</html>
