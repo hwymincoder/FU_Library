@@ -91,14 +91,26 @@ public class UserController {
     }
 
     @PostMapping("/{id}/ban")
-    public String deleteUser(@PathVariable Long id, RedirectAttributes redirectAttributes) {
+    public String banUser(@PathVariable Long id, RedirectAttributes redirectAttributes) {
         try {
             userService.banUser(id);
-            redirectAttributes.addFlashAttribute("success", "Người dùng đã được xóa thành công!");
+            redirectAttributes.addFlashAttribute("success", "Người dùng đã bị khóa thành công!");
         } catch (Exception e) {
-            redirectAttributes.addFlashAttribute("error", "Lỗi khi xóa người dùng: " + e.getMessage());
+            redirectAttributes.addFlashAttribute("error", "Lỗi khi khóa người dùng: " + e.getMessage());
         }
         return "redirect:/manager/users";
+    }
+
+    @PostMapping("/{id}/unban")
+    public String unbanUser(@PathVariable Long id, RedirectAttributes redirectAttributes) {
+        try {
+            userService.unbanUser(id);
+            redirectAttributes.addFlashAttribute("success", "Đã mở khóa người dùng thành công!");
+            return "redirect:/manager/users";
+        } catch (Exception e) {
+            redirectAttributes.addFlashAttribute("error", "Lỗi khi mở khóa người dùng: " + e.getMessage());
+            return "redirect:/manager/users";
+        }
     }
 
     @GetMapping("/{id}/deposit")

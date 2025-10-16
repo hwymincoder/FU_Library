@@ -134,4 +134,20 @@ public class Book {
     public void setBorrowRecords(List<BorrowRecord> borrowRecords) {
         this.borrowRecords = borrowRecords;
     }
+
+    @Override
+    public String toString() {
+        return "Book{" +
+                "id=" + id +
+                ", title='" + title + '\'' +
+                ", isbn='" + isbn + '\'' +
+                ", description='" + description + '\'' +
+                ", totalCopies=" + totalCopies +
+                ", availableCopies=" + availableCopies +
+                ", createdAt=" + createdAt +
+                ", library=" + library +
+                ", authors=" + authors +
+                ", borrowRecords=" + borrowRecords +
+                '}';
+    }
 }

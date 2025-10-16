@@ -28,8 +28,6 @@ public class UserService {
     @Autowired
     private PaymentTransactionRepository paymentTransactionRepository;
 
-
-
     public List<User> getAllUsers() {
         return userRepository.findAll();
     }
@@ -47,10 +45,14 @@ public class UserService {
     }
 
     public void banUser(Long id) {
-
         User user = userRepository.findById(id).get();
-
         user.setIsBanned(true);
+        userRepository.save(user);
+    }
+
+    public void unbanUser(Long id) {
+        User user = userRepository.findById(id).get();
+        user.setIsBanned(false);
         userRepository.save(user);
     }
 
@@ -129,8 +131,6 @@ public class UserService {
             userRepository.save(user);
         }
     }
-
-
 
     public User updateUserProfile(Long userId, String name, String phone) {
         User user = getUserById(userId)
