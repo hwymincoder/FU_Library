@@ -19,11 +19,11 @@
     <style>
       .sidebar {
         min-height: 100vh;
-        background: linear-gradient(180deg, #2c3e50 0%, #34495e 100%);
+        background: #6F4E37;
         box-shadow: 2px 0 10px rgba(0,0,0,0.1);
       }
       .sidebar .nav-link {
-        color: #bdc3c7;
+        color: #D2B48C;
         padding: 12px 20px;
         margin: 4px 8px;
         border-radius: 8px;
@@ -31,12 +31,12 @@
       }
       .sidebar .nav-link:hover {
         color: #fff;
-        background-color: rgba(52, 152, 219, 0.2);
+        background-color: #8B7355;
         transform: translateX(5px);
       }
       .sidebar .nav-link.active {
         color: #fff;
-        background: linear-gradient(135deg, #3498db 0%, #2980b9 100%);
+        background: #A0826D;
         box-shadow: 0 4px 6px rgba(0,0,0,0.2);
       }
       .sidebar .nav-link i {
@@ -46,7 +46,7 @@
       }
       .main-content {
         margin-left: 0;
-        background-color: #f8f9fa;
+        background-color: #F5F5DC;
       }
       @media (min-width: 768px) {
         .main-content {
@@ -54,19 +54,19 @@
         }
       }
       .border-left-primary {
-        border-left: 4px solid #4e73df !important;
+        border-left: 4px solid #8B7355 !important;
       }
       .border-left-success {
-        border-left: 4px solid #1cc88a !important;
+        border-left: 4px solid #A0826D !important;
       }
       .border-left-info {
-        border-left: 4px solid #36b9cc !important;
+        border-left: 4px solid #C19A6B !important;
       }
       .border-left-warning {
-        border-left: 4px solid #f6c23e !important;
+        border-left: 4px solid #DEB887 !important;
       }
       .border-left-danger {
-        border-left: 4px solid #e74a3b !important;
+        border-left: 4px solid #8B4513 !important;
       }
     </style>
   </head>
@@ -80,7 +80,7 @@
               <h4 class="text-white mb-2"><i class="fas fa-book-reader"></i> Quản lý thư viện</h4>
               <div th:if="${session.loginUser}" class="text-white-50 small">
                 <div class="fw-bold text-white" th:text="${session.loginUser.name}"></div>
-                <span class="badge bg-primary">Manager</span>
+                <span class="badge" style="background-color: #A0826D;">Manager</span>
               </div>
             </div>
             <ul class="nav flex-column">

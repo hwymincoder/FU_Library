@@ -69,7 +69,7 @@
               Sách có sẵn
             </span>
           </h4>
-          <span class="badge bg-primary fs-6" th:text="${#lists.size(books)} + ' cuốn sách'">0 cuốn sách</span>
+          <span class="badge fs-6" style="background-color: #8B7355;" th:text="${#lists.size(books)} + ' cuốn sách'">0 cuốn sách</span>
         </div>
 
         <div class="row">
@@ -85,10 +85,10 @@
                 <p class="card-text" th:text="${book.description}">Description</p>
                 <hr>
                 <div class="d-flex justify-content-between align-items-center mb-2">
-                  <span class="badge bg-success" th:if="${book.availableCopies > 0}">
+                  <span class="badge" style="background-color: #A0826D;" th:if="${book.availableCopies > 0}">
                     <i class="fas fa-check-circle me-1"></i>Còn <span th:text="${book.availableCopies}">0</span> cuốn
                   </span>
-                  <span class="badge bg-danger" th:if="${book.availableCopies <= 0}">
+                  <span class="badge" style="background-color: #8B4513;" th:if="${book.availableCopies <= 0}">
                     <i class="fas fa-times-circle me-1"></i>Hết sách
                   </span>
                 </div>

@@ -22,7 +22,7 @@
 
       <div class="row mb-4">
         <div class="col-md-3">
-          <div class="card text-white bg-info">
+          <div class="card text-white" style="background-color: #8B7355;">
             <div class="card-body">
               <h6>Tổng giao dịch</h6>
               <h3 th:text="${#lists.size(borrows)}">0</h3>
@@ -32,7 +32,7 @@
 
         <div class="col-md-3">
           <a href="/manager/borrows/active" class="text-decoration-none">
-            <div class="card text-white bg-warning">
+            <div class="card text-white" style="background-color: #C19A6B;">
               <div class="card-body">
                 <h6>Đang mượn</h6>
                 <h3
@@ -51,7 +51,7 @@
 
         <div class="col-md-3">
           <a href="/manager/borrows/overdue" class="text-decoration-none">
-            <div class="card text-white bg-danger">
+            <div class="card text-white" style="background-color: #8B4513;">
               <div class="card-body">
                 <h6>Quá hạn</h6>
                 <h3
@@ -69,7 +69,7 @@
         </div>
 
         <div class="col-md-3">
-          <div class="card text-white bg-success">
+          <div class="card text-white" style="background-color: #A0826D;">
             <div class="card-body">
               <h6>Đã trả</h6>
               <h3
@@ -87,7 +87,7 @@
       </div>
 
       <div class="card shadow-sm">
-        <div class="card-header bg-primary text-white">
+        <div class="card-header text-white" style="background-color: #8B7355;">
           <h6 class="mb-0">
             Danh sách giao dịch (<span th:text="${#lists.size(borrows)}">0</span
             >)
@@ -137,17 +137,17 @@
                   <td>
                     <span
                       th:if="${borrow.status.name() == 'BORROWED'}"
-                      class="badge bg-warning"
+                      class="badge" style="background-color: #C19A6B;"
                       >Đang mượn</span
                     >
                     <span
                       th:if="${borrow.status.name() == 'RETURNED'}"
-                      class="badge bg-success"
+                      class="badge" style="background-color: #A0826D;"
                       >Đã trả</span
                     >
                     <span
                       th:if="${borrow.status.name() == 'OVERDUE'}"
-                      class="badge bg-danger"
+                      class="badge" style="background-color: #8B4513;"
                       >Quá hạn</span
                     >
                   </td>

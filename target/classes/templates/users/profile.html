@@ -47,7 +47,7 @@
           <div class="col-md-8">
             <!-- User Info Card -->
             <div class="card mb-4 shadow-sm">
-              <div class="card-header bg-primary text-white">
+              <div class="card-header text-white" style="background-color: #8B7355;">
                 <h5 class="mb-0">
                   <i class="fas fa-info-circle me-2"></i>Chi tiết tài khoản
                 </h5>
@@ -83,13 +83,13 @@
                   <div class="col-sm-8">
                     <span
                       th:if="${user.membership != null}"
-                      class="badge bg-warning"
+                      class="badge" style="background-color: #C19A6B;"
                       th:text="${user.membership.type}"
                       >Cao cấp</span
                     >
                     <span
                       th:unless="${user.membership != null}"
-                      class="badge bg-secondary"
+                      class="badge" style="background-color: #6F4E37;"
                       >Không có</span
                     >
                   </div>
@@ -109,7 +109,7 @@
             <!-- Edit Personal Info Form -->
             <div class="collapse mb-4" id="personalInfo">
               <div class="card shadow-sm">
-                <div class="card-header bg-info text-white">
+                <div class="card-header text-white" style="background-color: #C19A6B;">
                   <h5 class="mb-0">
                     <i class="fas fa-edit me-2"></i>Chỉnh sửa thông tin cá nhân
                   </h5>

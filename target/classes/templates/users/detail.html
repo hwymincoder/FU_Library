@@ -16,7 +16,7 @@
     <div class="row">
       <div class="col-md-8">
         <div class="card shadow-sm mb-4">
-          <div class="card-header bg-primary text-white"><h5 class="mb-0" th:text="${user.name}"></h5></div>
+          <div class="card-header text-white" style="background-color: #8B7355;"><h5 class="mb-0" th:text="${user.name}"></h5></div>
           <div class="card-body">
             <div class="row">
               <div class="col-md-6">
@@ -34,8 +34,8 @@
                   <tr>
                     <td width="40%"><strong>Membership:</strong></td>
                     <td>
-                      <span th:if="${user.membership}" class="badge bg-warning" th:text="${user.membership.type}"></span>
-                      <span th:unless="${user.membership}" class="badge bg-secondary">None</span>
+                      <span th:if="${user.membership}" class="badge" style="background-color: #C19A6B;" th:text="${user.membership.type}"></span>
+                      <span th:unless="${user.membership}" class="badge" style="background-color: #6F4E37;">None</span>
                     </td>
                   </tr>
                   <tr th:if="${user.membershipExpiresAt}">
@@ -45,8 +45,8 @@
                   <tr>
                     <td><strong>Trạng thái:</strong></td>
                     <td>
-                      <span th:if="${user.isBanned}" class="badge bg-danger">Bị khóa</span>
-                      <span th:unless="${user.isBanned}" class="badge bg-success">Hoạt động</span>
+                      <span th:if="${user.isBanned}" class="badge" style="background-color: #8B4513;">Bị khóa</span>
+                      <span th:unless="${user.isBanned}" class="badge" style="background-color: #A0826D;">Hoạt động</span>
                     </td>
                   </tr>
                 </table>
@@ -57,7 +57,7 @@
         
         <!-- Membership Purchase -->
         <div class="card shadow-sm" th:if="${memberships}">
-          <div class="card-header bg-warning text-dark"><h6 class="mb-0">Mua Membership</h6></div>
+          <div class="card-header text-white" style="background-color: #C19A6B;"><h6 class="mb-0">Mua Membership</h6></div>
           <div class="card-body">
             <form th:action="@{/manager/users/{id}/membership(id=${user.id})}" method="post">
               <div class="row">

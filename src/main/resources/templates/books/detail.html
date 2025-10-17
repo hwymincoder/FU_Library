@@ -31,7 +31,7 @@
       <div class="row">
         <div class="col-md-8">
           <div class="card shadow-sm mb-4">
-            <div class="card-header bg-primary text-white">
+            <div class="card-header text-white" style="background-color: #8B7355;">
               <h5 class="card-title mb-0">
                 <i class="fas fa-info-circle me-2"></i>
                 <span th:text="${book.title}">Tên sách</span>
@@ -73,7 +73,7 @@
                       </td>
                       <td>
                         <span
-                          class="badge bg-info"
+                          class="badge" style="background-color: #C19A6B;"
                           th:text="${book.totalCopies}"
                         ></span>
                       </td>
@@ -88,12 +88,12 @@
                       <td>
                         <span
                           th:if="${book.availableCopies != null and book.availableCopies > 0}"
-                          class="badge bg-success fs-6"
+                          class="badge fs-6" style="background-color: #A0826D;"
                           th:text="${book.availableCopies}"
                         ></span>
                         <span
                           th:unless="${book.availableCopies != null and book.availableCopies > 0}"
-                          class="badge bg-danger fs-6"
+                          class="badge fs-6" style="background-color: #8B4513;"
                           >Hết</span
                         >
                       </td>
@@ -186,7 +186,7 @@
             class="card shadow-sm"
             th:if="${book.borrowRecords != null and !#lists.isEmpty(book.borrowRecords)}"
           >
-            <div class="card-header bg-success text-white">
+            <div class="card-header text-white" style="background-color: #A0826D;">
               <h6 class="card-title mb-0">
                 <i class="fas fa-history me-2"></i>Lịch sử mượn sách (<span
                   th:text="${#lists.size(book.borrowRecords)}"
@@ -222,17 +222,17 @@
                       <td>
                         <span
                           th:if="${record.status.name() == 'BORROWED'}"
-                          class="badge bg-warning"
+                          class="badge" style="background-color: #C19A6B;"
                           >Đang mượn</span
                         >
                         <span
                           th:if="${record.status.name() == 'RETURNED'}"
-                          class="badge bg-success"
+                          class="badge" style="background-color: #A0826D;"
                           >Đã trả</span
                         >
                         <span
                           th:if="${record.status.name() == 'OVERDUE'}"
-                          class="badge bg-danger"
+                          class="badge" style="background-color: #8B4513;"
                           >Quá hạn</span
                         >
                       </td>

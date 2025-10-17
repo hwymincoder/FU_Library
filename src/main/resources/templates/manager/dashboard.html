@@ -175,23 +175,23 @@
       <div class="row">
         <div class="col-lg-6">
           <div class="card shadow mb-4">
-            <div class="card-header py-3 bg-primary text-white">
+            <div class="card-header py-3 text-white" style="background-color: #8B7355;">
               <h6 class="m-0 font-weight-bold"><i class="fas fa-bolt me-2"></i>Thao tác nhanh</h6>
             </div>
             <div class="card-body">
               <div class="row">
                 <div class="col-md-4 mb-3">
-                  <a href="/manager/books/create" class="btn btn-primary btn-block w-100">
+                  <a href="/manager/books/create" class="btn btn-block w-100" style="background-color: #8B7355; color: white;">
                     <i class="fas fa-plus me-2"></i> Thêm sách mới
                   </a>
                 </div>
                 <div class="col-md-4 mb-3">
-                  <a href="/manager/authors/create" class="btn btn-success btn-block w-100">
+                  <a href="/manager/authors/create" class="btn btn-block w-100" style="background-color: #A0826D; color: white;">
                     <i class="fas fa-user-plus me-2"></i> Thêm tác giả
                   </a>
                 </div>
                 <div class="col-md-4 mb-3">
-                  <a href="/manager/users/create" class="btn btn-info btn-block w-100">
+                  <a href="/manager/users/create" class="btn btn-block w-100" style="background-color: #C19A6B; color: white;">
                     <i class="fas fa-user-plus me-2"></i> Thêm người dùng
                   </a>
                 </div>
@@ -202,7 +202,7 @@
 
         <div class="col-lg-6">
           <div class="card shadow mb-4">
-            <div class="card-header py-3 bg-info text-white">
+            <div class="card-header py-3 text-white" style="background-color: #A0826D;">
               <h6 class="m-0 font-weight-bold"><i class="fas fa-list me-2"></i>Truy cập nhanh</h6>
             </div>
             <div class="card-body">
@@ -211,22 +211,22 @@
                   href="/manager/books"
                   class="list-group-item list-group-item-action"
                 >
-                  <i class="fas fa-book text-primary"></i> Danh sách sách
+                  <i class="fas fa-book" style="color: #8B7355;"></i> Danh sách sách
                 </a>
                 <a
                   href="/manager/borrows/overdue"
                   class="list-group-item list-group-item-action"
                 >
-                  <i class="fas fa-exclamation-triangle text-danger"></i> Sách quá hạn
+                  <i class="fas fa-exclamation-triangle" style="color: #8B4513;"></i> Sách quá hạn
                 </a>
                 <a href="/manager/users" class="list-group-item list-group-item-action">
-                  <i class="fas fa-users text-info"></i> Danh sách người dùng
+                  <i class="fas fa-users" style="color: #A0826D;"></i> Danh sách người dùng
                 </a>
                 <a
                   href="/manager/borrows/active"
                   class="list-group-item list-group-item-action"
                 >
-                  <i class="fas fa-exchange-alt text-warning"></i> Đang mượn sách
+                  <i class="fas fa-exchange-alt" style="color: #C19A6B;"></i> Đang mượn sách
                 </a>
               </div>
             </div>
@@ -238,7 +238,7 @@
       <div class="row">
         <div class="col-12">
           <div class="card shadow mb-4">
-            <div class="card-header py-3 bg-success text-white">
+            <div class="card-header py-3 text-white" style="background-color: #A0826D;">
               <h6 class="m-0 font-weight-bold"><i class="fas fa-clock me-2"></i>Giao dịch mượn sách gần đây</h6>
             </div>
             <div class="card-body">
@@ -260,9 +260,9 @@
                       <td th:text="${#temporals.format(borrow.borrowDate, 'dd/MM/yyyy HH:mm')}"></td>
                       <td th:text="${#temporals.format(borrow.dueDate, 'dd/MM/yyyy')}"></td>
                       <td>
-                        <span th:if="${borrow.status.name() == 'BORROWED'}" class="badge bg-warning">Đang mượn</span>
-                        <span th:if="${borrow.status.name() == 'RETURNED'}" class="badge bg-success">Đã trả</span>
-                        <span th:if="${borrow.status.name() == 'OVERDUE'}" class="badge bg-danger">Quá hạn</span>
+                        <span th:if="${borrow.status.name() == 'BORROWED'}" class="badge" style="background-color: #C19A6B;">Đang mượn</span>
+                        <span th:if="${borrow.status.name() == 'RETURNED'}" class="badge" style="background-color: #A0826D;">Đã trả</span>
+                        <span th:if="${borrow.status.name() == 'OVERDUE'}" class="badge" style="background-color: #8B4513;">Quá hạn</span>
                       </td>
                     </tr>
                     <tr th:if="${#lists.isEmpty(recentBorrows)}">

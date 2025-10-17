@@ -15,7 +15,7 @@
       Có <strong th:text="${#lists.size(borrows)}">0</strong> sách quá hạn cần xử lý!
     </div>
     <div class="card shadow-sm">
-      <div class="card-header bg-danger text-white">
+      <div class="card-header text-white" style="background-color: #8B4513;">
         <h6 class="mb-0">Danh sách quá hạn (<span th:text="${#lists.size(borrows)}">0</span>)</h6>
       </div>
       <div class="card-body">
@@ -39,7 +39,7 @@
                 <td><a th:href="@{/manager/books/{id}(id=${borrow.book.id})}" th:text="${borrow.book.title}"></a></td>
                 <td th:text="${#temporals.format(borrow.dueDate, 'dd/MM/yyyy')}"></td>
                 <td>
-                  <span class="badge bg-danger" 
+                  <span class="badge" style="background-color: #8B4513;" 
                     th:text="${#temporals.daysBetween(borrow.dueDate, #temporals.createNow())} + ' ngày'">0</span>
                 </td>
                 <td class="text-danger fw-bold" th:text="${#numbers.formatDecimal(borrow.fineAmount, 0, 'COMMA', 0, 'POINT')} + ' đ'">0</td>

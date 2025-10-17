@@ -18,7 +18,7 @@
         >
       </div>
       <div class="card shadow-sm">
-        <div class="card-header bg-primary text-white">
+        <div class="card-header text-white" style="background-color: #8B7355;">
           <h6 class="mb-0">
             Danh sách người dùng (<span th:text="${#lists.size(users)}">0</span
             >)
@@ -59,20 +59,20 @@
                   <td>
                     <span
                       th:if="${user.membership}"
-                      class="badge bg-warning"
+                      class="badge" style="background-color: #C19A6B;"
                       th:text="${user.membership.type}"
                     ></span>
                     <span
                       th:unless="${user.membership}"
-                      class="badge bg-secondary"
+                      class="badge" style="background-color: #6F4E37;"
                       >None</span
                     >
                   </td>
                   <td>
-                    <span th:if="${user.isBanned}" class="badge bg-danger"
+                    <span th:if="${user.isBanned}" class="badge" style="background-color: #8B4513;"
                       >Bị khóa</span
                     >
-                    <span th:unless="${user.isBanned}" class="badge bg-success"
+                    <span th:unless="${user.isBanned}" class="badge" style="background-color: #A0826D;"
                       >Hoạt động</span
                     >
                   </td>
