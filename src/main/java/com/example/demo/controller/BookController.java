@@ -1,5 +1,6 @@
 package com.example.demo.controller;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -89,6 +90,12 @@ public class BookController {
                 .map(book -> {
                     model.addAttribute("book", book);
                     model.addAttribute("authors", authorService.getAllAuthors());
+                    // Pre-compute selected author IDs for the view to avoid complex Thymeleaf
+                    // expressions
+                    List<Long> selectedAuthorIds = book.getAuthors() != null
+                            ? book.getAuthors().stream().map(Author::getId).toList()
+                            : java.util.List.of();
+                    model.addAttribute("selectedAuthorIds", selectedAuthorIds);
                     return "books/edit";
                 })
                 .orElse("redirect:/manager/books");
@@ -100,17 +107,43 @@ public class BookController {
             @RequestParam(required = false) List<Long> authorIds,
             RedirectAttributes redirectAttributes) {
         try {
-            book.setId(id);
+
+            Book existingBook = bookService.getBookById(id)
+                    .orElseThrow(() -> new RuntimeException("Không tìm thấy sách"));
+
+            System.out.println(existingBook.getId());
+
+            // Cập nhật thông tin cơ bản
+            existingBook.setTitle(book.getTitle());
+            existingBook.setIsbn(book.getIsbn());
+            existingBook.setDescription(book.getDescription());
+
+            // Cập nhật số lượng sách một cách an toàn (tránh NullPointerException)
+            Integer previousTotal = existingBook.getTotalCopies() != null ? existingBook.getTotalCopies() : 0;
+            Integer previousAvailable = existingBook.getAvailableCopies() != null ? existingBook.getAvailableCopies()
+                    : 0;
+            int borrowedCopies = Math.max(0, previousTotal - previousAvailable);
+
+            Integer newTotal = book.getTotalCopies() != null ? book.getTotalCopies() : previousTotal;
+            existingBook.setTotalCopies(newTotal);
+            existingBook.setAvailableCopies(Math.max(0, newTotal - borrowedCopies));
+
+            // Cập nhật danh sách tác giả bằng cách load chính xác theo ID đã chọn
             if (authorIds != null && !authorIds.isEmpty()) {
-                List<Author> authors = authorService.getAllAuthors().stream()
-                        .filter(author -> authorIds.contains(author.getId()))
-                        .toList();
-                book.setAuthors(authors);
+                List<Author> authors = authorService.getAuthorsByIds(authorIds);
+                existingBook.setAuthors(authors);
+            } else {
+                existingBook.setAuthors(java.util.List.of()); // Không có tác giả nào được chọn
             }
-            bookService.saveBook(book);
+
+            System.out.println(existingBook);
+            System.out.println(existingBook.getAuthors());
+
+            bookService.saveBook(existingBook);
             redirectAttributes.addFlashAttribute("success", "Sách đã được cập nhật thành công!");
             return "redirect:/manager/books/" + id;
         } catch (Exception e) {
+            System.out.println("sao tao lại ở đây ");
             redirectAttributes.addFlashAttribute("error", "Lỗi khi cập nhật sách: " + e.getMessage());
             return "redirect:/manager/books/" + id + "/edit";
         }

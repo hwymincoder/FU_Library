@@ -1,116 +1,208 @@
 <!DOCTYPE html>
-<html lang="vi" xmlns:th="http://www.thymeleaf.org"
-  th:replace="~{manager/layout :: layout(~{::title}, ~{::content})}">
-<head><title>Quản lý mượn/trả sách</title></head>
-<body>
-  <div th:fragment="content">
-    <div class="d-flex justify-content-between align-items-center pt-3 pb-2 mb-3 border-bottom">
-      <h1 class="h2"><i class="fas fa-exchange-alt me-2"></i>Quản lý mượn/trả sách</h1>
-      <a href="/manager/borrows/create" class="btn btn-primary"><i class="fas fa-plus me-2"></i>Mượn sách mới</a>
-    </div>
-    
-    <div class="row mb-4">
-      <div class="col-md-3">
-        <div class="card text-white bg-info">
-          <div class="card-body">
-            <h6>Tổng giao dịch</h6>
-            <h3 th:text="${#lists.size(borrows)}">0</h3>
-          </div>
-        </div>
+<html
+  lang="vi"
+  xmlns:th="http://www.thymeleaf.org"
+  th:replace="~{manager/layout :: layout(~{::title}, ~{::content})}"
+>
+  <head>
+    <title>Quản lý mượn/trả sách</title>
+  </head>
+  <body>
+    <div th:fragment="content">
+      <div
+        class="d-flex justify-content-between align-items-center pt-3 pb-2 mb-3 border-bottom"
+      >
+        <h1 class="h2">
+          <i class="fas fa-exchange-alt me-2"></i>Quản lý mượn/trả sách
+        </h1>
+        <a href="/manager/borrows/create" class="btn btn-primary"
+          ><i class="fas fa-plus me-2"></i>Mượn sách mới</a
+        >
       </div>
-      <div class="col-md-3">
-        <a href="/manager/borrows/active" class="text-decoration-none">
-          <div class="card text-white bg-warning">
-            <div class="card-body">
-              <h6>Đang mượn</h6>
-              <h3 th:text="${borrows.stream().filter(b -> b.status.name() == 'BORROWED').count()}">0</h3>
-            </div>
-          </div>
-        </a>
-      </div>
-      <div class="col-md-3">
-        <a href="/manager/borrows/overdue" class="text-decoration-none">
-          <div class="card text-white bg-danger">
-            <div class="card-body">
-              <h6>Quá hạn</h6>
-              <h3 th:text="${borrows.stream().filter(b -> b.status.name() == 'OVERDUE').count()}">0</h3>
-            </div>
-          </div>
-        </a>
-      </div>
-      <div class="col-md-3">
-        <div class="card text-white bg-success">
-          <div class="card-body">
-            <h6>Đã trả</h6>
-            <h3 th:text="${borrows.stream().filter(b -> b.status.name() == 'RETURNED').count()}">0</h3>
-          </div>
-        </div>
-      </div>
-    </div>
 
-    <div class="card shadow-sm">
-      <div class="card-header bg-primary text-white">
-        <h6 class="mb-0">Danh sách giao dịch (<span th:text="${#lists.size(borrows)}">0</span>)</h6>
+      <div class="row mb-4">
+        <div class="col-md-3">
+          <div class="card text-white bg-info">
+            <div class="card-body">
+              <h6>Tổng giao dịch</h6>
+              <h3 th:text="${#lists.size(borrows)}">0</h3>
+            </div>
+          </div>
+        </div>
+
+        <div class="col-md-3">
+          <a href="/manager/borrows/active" class="text-decoration-none">
+            <div class="card text-white bg-warning">
+              <div class="card-body">
+                <h6>Đang mượn</h6>
+                <h3
+                  th:text="${borrows != null
+              ? #lists.size(
+                  borrows.?[status == T(com.example.demo.entity.BorrowRecord$Status).BORROWED]
+                )
+              : 0}"
+                >
+                  0
+                </h3>
+              </div>
+            </div>
+          </a>
+        </div>
+
+        <div class="col-md-3">
+          <a href="/manager/borrows/overdue" class="text-decoration-none">
+            <div class="card text-white bg-danger">
+              <div class="card-body">
+                <h6>Quá hạn</h6>
+                <h3
+                  th:text="${borrows != null
+              ? #lists.size(
+                  borrows.?[status == T(com.example.demo.entity.BorrowRecord$Status).OVERDUE]
+                )
+              : 0}"
+                >
+                  0
+                </h3>
+              </div>
+            </div>
+          </a>
+        </div>
+
+        <div class="col-md-3">
+          <div class="card text-white bg-success">
+            <div class="card-body">
+              <h6>Đã trả</h6>
+              <h3
+                th:text="${borrows != null
+            ? #lists.size(
+                borrows.?[status == T(com.example.demo.entity.BorrowRecord$Status).RETURNED]
+              )
+            : 0}"
+              >
+                0
+              </h3>
+            </div>
+          </div>
+        </div>
       </div>
-      <div class="card-body">
-        <div class="table-responsive">
-          <table class="table table-hover table-striped">
-            <thead class="table-light">
-              <tr>
-                <th>ID</th>
-                <th>Người mượn</th>
-                <th>Sách</th>
-                <th>Ngày mượn</th>
-                <th>Hạn trả</th>
-                <th>Trạng thái</th>
-                <th>Phạt</th>
-                <th class="text-center">Thao tác</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr th:each="borrow : ${borrows}">
-                <td><span class="badge bg-secondary" th:text="${borrow.id}"></span></td>
-                <td><a th:href="@{/manager/users/{id}(id=${borrow.user.id})}" th:text="${borrow.user.name}"></a></td>
-                <td><a th:href="@{/manager/books/{id}(id=${borrow.book.id})}" th:text="${borrow.book.title}"></a></td>
-                <td th:text="${#temporals.format(borrow.borrowDate, 'dd/MM/yyyy')}"></td>
-                <td th:text="${#temporals.format(borrow.dueDate, 'dd/MM/yyyy')}"></td>
-                <td>
-                  <span th:if="${borrow.status.name() == 'BORROWED'}" class="badge bg-warning">Đang mượn</span>
-                  <span th:if="${borrow.status.name() == 'RETURNED'}" class="badge bg-success">Đã trả</span>
-                  <span th:if="${borrow.status.name() == 'OVERDUE'}" class="badge bg-danger">Quá hạn</span>
-                </td>
-                <td>
-                  <span th:if="${borrow.fineAmount > 0}" class="text-danger fw-bold" 
-                    th:text="${#numbers.formatDecimal(borrow.fineAmount, 0, 'COMMA', 0, 'POINT')} + ' đ'"></span>
-                  <span th:unless="${borrow.fineAmount > 0}">-</span>
-                </td>
-                <td class="text-center">
-                  <div class="btn-group">
-                    <form th:if="${borrow.status.name() != 'RETURNED'}" 
-                      th:action="@{/manager/borrows/{id}/return(id=${borrow.id})}" method="post" class="d-inline">
-                      <button type="submit" class="btn btn-sm btn-success" title="Trả sách">
-                        <i class="fas fa-undo"></i>
-                      </button>
-                    </form>
-                    <form th:if="${borrow.fineAmount > 0}" 
-                      th:action="@{/manager/borrows/{id}/pay-fine(id=${borrow.id})}" method="post" class="d-inline">
-                      <button type="submit" class="btn btn-sm btn-warning" title="Thanh toán phạt">
-                        <i class="fas fa-dollar-sign"></i>
-                      </button>
-                    </form>
-                  </div>
-                </td>
-              </tr>
-              <tr th:if="${#lists.isEmpty(borrows)}">
-                <td colspan="8" class="text-center text-muted py-4">
-                  <i class="fas fa-inbox fa-3x mb-3 d-block"></i>Chưa có giao dịch nào
-                </td>
-              </tr>
-            </tbody>
-          </table>
+
+      <div class="card shadow-sm">
+        <div class="card-header bg-primary text-white">
+          <h6 class="mb-0">
+            Danh sách giao dịch (<span th:text="${#lists.size(borrows)}">0</span
+            >)
+          </h6>
+        </div>
+        <div class="card-body">
+          <div class="table-responsive">
+            <table class="table table-hover table-striped">
+              <thead class="table-light">
+                <tr>
+                  <th>ID</th>
+                  <th>Người mượn</th>
+                  <th>Sách</th>
+                  <th>Ngày mượn</th>
+                  <th>Hạn trả</th>
+                  <th>Trạng thái</th>
+                  <th>Phạt</th>
+                  <th class="text-center">Thao tác</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr th:each="borrow : ${borrows}">
+                  <td>
+                    <span
+                      class="badge bg-secondary"
+                      th:text="${borrow.id}"
+                    ></span>
+                  </td>
+                  <td>
+                    <a
+                      th:href="@{/manager/users/{id}(id=${borrow.user.id})}"
+                      th:text="${borrow.user.name}"
+                    ></a>
+                  </td>
+                  <td>
+                    <a
+                      th:href="@{/manager/books/{id}(id=${borrow.book.id})}"
+                      th:text="${borrow.book.title}"
+                    ></a>
+                  </td>
+                  <td
+                    th:text="${#temporals.format(borrow.borrowDate, 'dd/MM/yyyy')}"
+                  ></td>
+                  <td
+                    th:text="${#temporals.format(borrow.dueDate, 'dd/MM/yyyy')}"
+                  ></td>
+                  <td>
+                    <span
+                      th:if="${borrow.status.name() == 'BORROWED'}"
+                      class="badge bg-warning"
+                      >Đang mượn</span
+                    >
+                    <span
+                      th:if="${borrow.status.name() == 'RETURNED'}"
+                      class="badge bg-success"
+                      >Đã trả</span
+                    >
+                    <span
+                      th:if="${borrow.status.name() == 'OVERDUE'}"
+                      class="badge bg-danger"
+                      >Quá hạn</span
+                    >
+                  </td>
+                  <td>
+                    <span
+                      th:if="${borrow.fineAmount > 0}"
+                      class="text-danger fw-bold"
+                      th:text="${#numbers.formatDecimal(borrow.fineAmount, 0, 'COMMA', 0, 'POINT')} + ' đ'"
+                    ></span>
+                    <span th:unless="${borrow.fineAmount > 0}">-</span>
+                  </td>
+                  <td class="text-center">
+                    <div class="btn-group">
+                      <form
+                        th:if="${borrow.status.name() != 'RETURNED'}"
+                        th:action="@{/manager/borrows/{id}/return(id=${borrow.id})}"
+                        method="post"
+                        class="d-inline"
+                      >
+                        <button
+                          type="submit"
+                          class="btn btn-sm btn-success"
+                          title="Trả sách"
+                        >
+                          <i class="fas fa-undo"></i>
+                        </button>
+                      </form>
+                      <form
+                        th:if="${borrow.fineAmount > 0}"
+                        th:action="@{/manager/borrows/{id}/pay-fine(id=${borrow.id})}"
+                        method="post"
+                        class="d-inline"
+                      >
+                        <button
+                          type="submit"
+                          class="btn btn-sm btn-warning"
+                          title="Thanh toán phạt"
+                        >
+                          <i class="fas fa-dollar-sign"></i>
+                        </button>
+                      </form>
+                    </div>
+                  </td>
+                </tr>
+                <tr th:if="${#lists.isEmpty(borrows)}">
+                  <td colspan="8" class="text-center text-muted py-4">
+                    <i class="fas fa-inbox fa-3x mb-3 d-block"></i>Chưa có giao
+                    dịch nào
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
         </div>
       </div>
     </div>
-  </div>
-</body>
+  </body>
 </html>

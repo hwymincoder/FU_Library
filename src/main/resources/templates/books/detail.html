@@ -15,7 +15,10 @@
         <h1 class="h2"><i class="fas fa-book-open me-2"></i>Chi tiết sách</h1>
         <div class="btn-toolbar mb-2 mb-md-0">
           <div class="btn-group me-2">
-            <a th:href="@{/manager/books/{id}/edit(id=${book.id})}" class="btn btn-warning">
+            <a
+              th:href="@{/manager/books/{id}/edit(id=${book.id})}"
+              class="btn btn-warning"
+            >
               <i class="fas fa-edit me-2"></i>Chỉnh sửa
             </a>
           </div>
@@ -39,66 +42,121 @@
                 <div class="col-md-6">
                   <table class="table table-borderless">
                     <tr>
-                      <td width="40%"><strong><i class="fas fa-hashtag me-2 text-muted"></i>ID:</strong></td>
-                      <td><span class="badge bg-secondary" th:text="${book.id}"></span></td>
+                      <td width="40%">
+                        <strong
+                          ><i class="fas fa-hashtag me-2 text-muted"></i
+                          >ID:</strong
+                        >
+                      </td>
+                      <td>
+                        <span
+                          class="badge bg-secondary"
+                          th:text="${book.id}"
+                        ></span>
+                      </td>
                     </tr>
                     <tr>
-                      <td><strong><i class="fas fa-barcode me-2 text-muted"></i>ISBN:</strong></td>
+                      <td>
+                        <strong
+                          ><i class="fas fa-barcode me-2 text-muted"></i
+                          >ISBN:</strong
+                        >
+                      </td>
                       <td><code th:text="${book.isbn}"></code></td>
                     </tr>
                     <tr>
-                      <td><strong><i class="fas fa-boxes me-2 text-muted"></i>Tổng số:</strong></td>
-                      <td><span class="badge bg-info" th:text="${book.totalCopies}"></span></td>
-                    </tr>
-                    <tr>
-                      <td><strong><i class="fas fa-check-circle me-2 text-muted"></i>Có sẵn:</strong></td>
+                      <td>
+                        <strong
+                          ><i class="fas fa-boxes me-2 text-muted"></i>Tổng
+                          số:</strong
+                        >
+                      </td>
                       <td>
                         <span
-                          th:if="${book.availableCopies > 0}"
+                          class="badge bg-info"
+                          th:text="${book.totalCopies}"
+                        ></span>
+                      </td>
+                    </tr>
+                    <tr>
+                      <td>
+                        <strong
+                          ><i class="fas fa-check-circle me-2 text-muted"></i>Có
+                          sẵn:</strong
+                        >
+                      </td>
+                      <td>
+                        <span
+                          th:if="${book.availableCopies != null and book.availableCopies > 0}"
                           class="badge bg-success fs-6"
                           th:text="${book.availableCopies}"
                         ></span>
                         <span
-                          th:unless="${book.availableCopies > 0}"
+                          th:unless="${book.availableCopies != null and book.availableCopies > 0}"
                           class="badge bg-danger fs-6"
                           >Hết</span
                         >
                       </td>
                     </tr>
                     <tr>
-                      <td><strong><i class="fas fa-calendar me-2 text-muted"></i>Ngày tạo:</strong></td>
                       <td>
-                        <span th:text="${#temporals.format(book.createdAt, 'dd/MM/yyyy HH:mm')}"></span>
+                        <strong
+                          ><i class="fas fa-calendar me-2 text-muted"></i>Ngày
+                          tạo:</strong
+                        >
+                      </td>
+                      <td>
+                        <span
+                          th:if="${book.createdAt != null}"
+                          th:text="${#temporals.format(book.createdAt, 'dd/MM/yyyy HH:mm')}"
+                        ></span>
+                        <span th:unless="${book.createdAt != null}">-</span>
                       </td>
                     </tr>
                   </table>
                 </div>
                 <div class="col-md-6">
                   <div th:if="${book.description}" class="mb-3">
-                    <strong><i class="fas fa-align-left me-2 text-muted"></i>Mô tả:</strong>
-                    <p th:text="${book.description}" class="mt-2 text-muted"></p>
+                    <strong
+                      ><i class="fas fa-align-left me-2 text-muted"></i>Mô
+                      tả:</strong
+                    >
+                    <p
+                      th:text="${book.description}"
+                      class="mt-2 text-muted"
+                    ></p>
                   </div>
 
                   <div>
-                    <strong><i class="fas fa-user-pen me-2 text-muted"></i>Tác giả:</strong>
-                    <ul class="mt-2" th:if="${book.authors and !book.authors.isEmpty()}">
-                      <li
-                        th:each="author : ${book.authors}"
-                      >
-                        <a th:href="@{/manager/authors/{id}(id=${author.id})}" class="text-decoration-none">
+                    <strong
+                      ><i class="fas fa-user-pen me-2 text-muted"></i>Tác
+                      giả:</strong
+                    >
+                    <ul
+                      class="mt-2"
+                      th:if="${book.authors != null and !#lists.isEmpty(book.authors)}"
+                    >
+                      <li th:each="author : ${book.authors}">
+                        <a
+                          th:href="@{/manager/authors/{id}(id=${author.id})}"
+                          class="text-decoration-none"
+                        >
                           <i class="fas fa-user me-1"></i>
                           <span th:text="${author.name}"></span>
                         </a>
                       </li>
                     </ul>
-                    <p class="text-muted mt-2" th:unless="${book.authors and !book.authors.isEmpty()}">
+                    <p
+                      class="text-muted mt-2"
+                      th:unless="${book.authors != null and !#lists.isEmpty(book.authors)}"
+                    >
                       <em>Chưa có tác giả</em>
                     </p>
                   </div>
                 </div>
               </div>
 
-              <hr>
+              <hr />
 
               <div class="mt-3">
                 <div class="btn-group" role="group">
@@ -126,11 +184,14 @@
           <!-- Borrow History -->
           <div
             class="card shadow-sm"
-            th:if="${book.borrowRecords and !book.borrowRecords.isEmpty()}"
+            th:if="${book.borrowRecords != null and !#lists.isEmpty(book.borrowRecords)}"
           >
             <div class="card-header bg-success text-white">
               <h6 class="card-title mb-0">
-                <i class="fas fa-history me-2"></i>Lịch sử mượn sách (<span th:text="${#lists.size(book.borrowRecords)}">0</span>)
+                <i class="fas fa-history me-2"></i>Lịch sử mượn sách (<span
+                  th:text="${#lists.size(book.borrowRecords)}"
+                  >0</span
+                >)
               </h6>
             </div>
             <div class="card-body">
@@ -147,7 +208,10 @@
                   <tbody>
                     <tr th:each="record : ${book.borrowRecords}">
                       <td>
-                        <a th:href="@{/manager/users/{id}(id=${record.user.id})}" th:text="${record.user.name}"></a>
+                        <a
+                          th:href="@{/manager/users/{id}(id=${record.user.id})}"
+                          th:text="${record.user.name}"
+                        ></a>
                       </td>
                       <td
                         th:text="${#temporals.format(record.borrowDate, 'dd/MM/yyyy')}"
@@ -156,9 +220,21 @@
                         th:text="${#temporals.format(record.dueDate, 'dd/MM/yyyy')}"
                       ></td>
                       <td>
-                        <span th:if="${record.status.name() == 'BORROWED'}" class="badge bg-warning">Đang mượn</span>
-                        <span th:if="${record.status.name() == 'RETURNED'}" class="badge bg-success">Đã trả</span>
-                        <span th:if="${record.status.name() == 'OVERDUE'}" class="badge bg-danger">Quá hạn</span>
+                        <span
+                          th:if="${record.status.name() == 'BORROWED'}"
+                          class="badge bg-warning"
+                          >Đang mượn</span
+                        >
+                        <span
+                          th:if="${record.status.name() == 'RETURNED'}"
+                          class="badge bg-success"
+                          >Đã trả</span
+                        >
+                        <span
+                          th:if="${record.status.name() == 'OVERDUE'}"
+                          class="badge bg-danger"
+                          >Quá hạn</span
+                        >
                       </td>
                     </tr>
                   </tbody>
@@ -171,7 +247,9 @@
         <div class="col-md-4">
           <div class="card shadow-sm border-primary">
             <div class="card-header bg-light">
-              <h6 class="card-title mb-0"><i class="fas fa-chart-bar me-2"></i>Thống kê</h6>
+              <h6 class="card-title mb-0">
+                <i class="fas fa-chart-bar me-2"></i>Thống kê
+              </h6>
             </div>
             <div class="card-body">
               <div class="text-center">
@@ -179,18 +257,25 @@
                 <h5 th:text="${book.title}"></h5>
                 <p class="text-muted"><small th:text="${book.isbn}"></small></p>
 
-                <hr>
+                <hr />
 
                 <div class="row text-center g-3">
                   <div class="col-6">
                     <div class="p-3 border rounded">
-                      <h3 class="mb-0 text-info" th:text="${book.totalCopies}">0</h3>
+                      <h3 class="mb-0 text-info" th:text="${book.totalCopies}">
+                        0
+                      </h3>
                       <small class="text-muted">Tổng số</small>
                     </div>
                   </div>
                   <div class="col-6">
                     <div class="p-3 border rounded">
-                      <h3 class="mb-0 text-success" th:text="${book.availableCopies}">0</h3>
+                      <h3
+                        class="mb-0 text-success"
+                        th:text="${book.availableCopies}"
+                      >
+                        0
+                      </h3>
                       <small class="text-muted">Có sẵn</small>
                     </div>
                   </div>
@@ -201,20 +286,28 @@
 
           <div class="card mt-3 shadow-sm">
             <div class="card-header bg-light">
-              <h6 class="card-title mb-0"><i class="fas fa-link me-2"></i>Liên kết nhanh</h6>
+              <h6 class="card-title mb-0">
+                <i class="fas fa-link me-2"></i>Liên kết nhanh
+              </h6>
             </div>
             <div class="card-body">
               <div class="d-grid gap-2">
                 <a href="/manager/books" class="btn btn-outline-primary btn-sm">
                   <i class="fas fa-list me-2"></i> Danh sách sách
                 </a>
-                <a href="/manager/books/create" class="btn btn-outline-success btn-sm">
+                <a
+                  href="/manager/books/create"
+                  class="btn btn-outline-success btn-sm"
+                >
                   <i class="fas fa-plus me-2"></i> Thêm sách mới
                 </a>
                 <a href="/manager/borrows" class="btn btn-outline-info btn-sm">
                   <i class="fas fa-exchange-alt me-2"></i> Quản lý mượn/trả
                 </a>
-                <a href="/manager/dashboard" class="btn btn-outline-secondary btn-sm">
+                <a
+                  href="/manager/dashboard"
+                  class="btn btn-outline-secondary btn-sm"
+                >
                   <i class="fas fa-home me-2"></i> Về Dashboard
                 </a>
               </div>
